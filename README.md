@@ -9,6 +9,7 @@ Il devra également proposer le choix de modalités :
 * Tramway
 * RER (Paris intramuros)
 * TOUS.
+
 Il devra être possible d'ajouter aisément une modalité, et d'y associer son réseau.
 Une résolution graphique pourra être réalisée en option et devra afficher graphiquement l'itinéraire. Pour ceux qui réaliseront cette option, il est fortement conseillé d'utiliser les coordonnées géographique (lat, lng) des stations pour les positionner optionnellement sur une carte de Paris.
 * Vous effectuerez une présentation orale.
@@ -16,6 +17,7 @@ Une résolution graphique pourra être réalisée en option et devra afficher gr
 * Les fichiers sources de votre travail.
 * Les fichiers compilés.
 * La javadoc.
+
 Au niveau algorithmique, selon votre niveau, vous
 challenge :
 * Niveau 1 - Implémentation Dijkstra
