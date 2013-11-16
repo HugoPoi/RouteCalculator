@@ -1,10 +1,10 @@
-package algo.graph;
+package fr.esgi.routecalculator;
 
 import java.util.EmptyStackException;
 import java.util.Stack;
 
-import algo.graph.interfaces.IGraph;
-import algo.graph.interfaces.INode;
+import fr.esgi.routecalculator.interfaces.IGraph;
+import fr.esgi.routecalculator.interfaces.INode;
 
 public class Application {
 

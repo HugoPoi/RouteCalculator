@@ -1,4 +1,4 @@
-package algo.graph.interfaces;
+package fr.esgi.routecalculator.interfaces;
 
 import java.util.List;
 

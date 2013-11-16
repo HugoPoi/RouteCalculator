@@ -1,7 +1,7 @@
-package algo.graph;
+package fr.esgi.routecalculator;
 
-import algo.graph.interfaces.INode;
-import algo.graph.interfaces.IRelation;
+import fr.esgi.routecalculator.interfaces.INode;
+import fr.esgi.routecalculator.interfaces.IRelation;
 
 public class Relation implements IRelation {
 	

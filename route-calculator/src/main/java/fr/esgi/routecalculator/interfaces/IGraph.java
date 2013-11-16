@@ -1,4 +1,4 @@
-package algo.graph.interfaces;
+package fr.esgi.routecalculator.interfaces;
 
 public interface IGraph {
 	void addRoute(String n1,String n2, int weight);

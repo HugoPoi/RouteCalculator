@@ -1,11 +1,11 @@
-package algo.graph;
+package fr.esgi.routecalculator;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.PriorityQueue;
 
-import algo.graph.interfaces.IGraph;
-import algo.graph.interfaces.IRelation;
+import fr.esgi.routecalculator.interfaces.IGraph;
+import fr.esgi.routecalculator.interfaces.IRelation;
 
 public class Graph implements IGraph {
 

@@ -1,9 +1,9 @@
-package algo.graph;
+package fr.esgi.routecalculator;
 import java.util.ArrayList;
 import java.util.List;
 
-import algo.graph.interfaces.INode;
-import algo.graph.interfaces.IRelation;
+import fr.esgi.routecalculator.interfaces.INode;
+import fr.esgi.routecalculator.interfaces.IRelation;
 
 
 public class Node implements INode{
