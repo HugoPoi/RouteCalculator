@@ -8,5 +8,12 @@
         <property name="hibernate.connection.password">rCPrHuAPUn4rnvbf</property>
         <property name="hibernate.connection.url">jdbc:mysql://127.0.0.1/gtfsratp</property>
         <property name="hibernate.connection.username">java</property>
+        <!-- Drop and re-create the database schema on startup -->
+        <property name="hbm2ddl.auto">update</property>
+        <property name="hibernate.current_session_context_class">org.hibernate.context.ThreadLocalSessionContext</property>
+        
+        <mapping resource="org/onebusaway/gtfs/model/GtfsMapping.hibernate.xml" />
+        <mapping resource="org/onebusaway/gtfs/impl/HibernateGtfsRelationalDaoImpl.hibernate.xml" />
+        
     </session-factory>
 </hibernate-configuration>
