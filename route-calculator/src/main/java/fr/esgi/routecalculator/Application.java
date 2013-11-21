@@ -1,6 +1,7 @@
 package fr.esgi.routecalculator;
 
 import java.util.EmptyStackException;
+
 import java.util.Stack;
 
 import fr.esgi.routecalculator.interfaces.IGraph;
@@ -14,9 +15,9 @@ public class Application {
 	public static void main(String[] args) {
 		IGraph test = new Graph();
 		test.addRoute("Lille", "Paris", 100);
-		test.addRoute("Paris", "Nantes", 50);
 		test.addRoute("Nantes", "Bordeaux", 500);
 		test.addRoute("Biarriz", "Bordeaux", 20);
+		test.addRoute("Paris", "Nantes", 50);
 		test.addRoute("Paris", "Lyon", 450);
 		test.addRoute("Lyon", "Valence", 15);
 		test.addRoute("Montpellier", "Valence", 30);
@@ -29,7 +30,8 @@ public class Application {
 		test.addRoute("Paris", "Mulhouse", 200);
 		test.addRoute("Lyon", "Mulhouse", 100);
 		
-		Stack<INode> find = test.findRoute("Lille", "Nice").export();
+		
+		Stack<INode> find = test.findRoute("Lille", "Lyon").export();
 		while(true){
 			try {
 				System.out.println(find.pop());
