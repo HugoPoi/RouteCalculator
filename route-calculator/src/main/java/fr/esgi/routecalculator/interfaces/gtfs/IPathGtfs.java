@@ -14,8 +14,10 @@ public interface IPathGtfs extends Comparable<IPathGtfs>{
 	
 	int getCurrentStopId();
 	int getCurrentTripId();
+	public int compareTo(IPathGtfs o);
+
 	
 	int getTotalTime();
 	List<Stop> getPossibleConnections();
-	List<StopTime> getPossibleConnectionsStopId();
+	public List<StopTime> getPossibleConnectionsStopId();
 }

@@ -50,7 +50,6 @@ public class PathGtfsImpl implements IPathGtfs {
 		this.totaltime = last.totaltime + triptime;
 	}
 
-	@Override
 	public int compareTo(IPathGtfs o) {
 		// TODO Auto-generated method stub
 		return 0;
@@ -103,6 +102,15 @@ public class PathGtfsImpl implements IPathGtfs {
 		Session session = sessionFactory.getCurrentSession();
 		session.beginTransaction();
 		if(this.currentStopTime == null){
+			
+			//Création de la date de départ
+			int departTime = 0;
+			java.util.GregorianCalendar calendar = new GregorianCalendar();
+			java.util.Date time  = calendar.getTime();
+			departTime = calendar.get(Calendar.HOUR_OF_DAY)*3600 + calendar.get(Calendar.MINUTE)*60 + calendar.get(Calendar.SECOND);
+			System.out.println("Heure de départ en seconde : " + departTime);
+			
+			
 			//Quand on commence appelÃ© une seul fois
 			//rÃ©cupÃ©ration des stops;
 			@SuppressWarnings("rawtypes")
