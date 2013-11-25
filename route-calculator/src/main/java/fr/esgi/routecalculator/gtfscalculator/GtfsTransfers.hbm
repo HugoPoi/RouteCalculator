@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+
+<hibernate-mapping package="fr.esgi.routecalculator.gtfscalculator">
+	<class name="GtfsTransfers" table="gtfs_transfers">
+		<id
+			column="gid"
+			name="Gid"
+			type="integer"
+		>
+			<generator class="vm" />
+		</id>
+		<property
+			column="transferType"
+			length="10"
+			name="TransferType"
+			not-null="false"
+			type="integer"
+		 />
+		<property
+			column="minTransferTime"
+			length="10"
+			name="MinTransferTime"
+			not-null="false"
+			type="integer"
+		 />
+
+		<many-to-one
+			class="GtfsTrips"
+			name="Totrip"
+			not-null="true"
+		>
+			<column name="toTrip_id" />
+		</many-to-one>
+		<many-to-one
+			class="GtfsStops"
+			name="Fromstop"
+			not-null="true"
+		>
+			<column name="fromStop_id" />
+		</many-to-one>
+		<many-to-one
+			class="GtfsRoutes"
+			name="FromrouteAgencyid"
+			not-null="true"
+		>
+			<column name="fromRoute_agencyId" />
+		</many-to-one>
+		<many-to-one
+			class="GtfsRoutes"
+			name="TorouteAgencyid"
+			not-null="true"
+		>
+			<column name="toRoute_agencyId" />
+		</many-to-one>
+		<many-to-one
+			class="GtfsRoutes"
+			name="Toroute"
+			not-null="true"
+		>
+			<column name="toRoute_id" />
+		</many-to-one>
+		<many-to-one
+			class="GtfsStops"
+			name="FromstopAgencyid"
+			not-null="true"
+		>
+			<column name="fromStop_agencyId" />
+		</many-to-one>
+		<many-to-one
+			class="GtfsStops"
+			name="TostopAgencyid"
+			not-null="true"
+		>
+			<column name="toStop_agencyId" />
+		</many-to-one>
+		<many-to-one
+			class="GtfsTrips"
+			name="Fromtrip"
+			not-null="true"
+		>
+			<column name="fromTrip_id" />
+		</many-to-one>
+		<many-to-one
+			class="GtfsTrips"
+			name="FromtripAgencyid"
+			not-null="true"
+		>
+			<column name="fromTrip_agencyId" />
+		</many-to-one>
+		<many-to-one
+			class="GtfsStops"
+			name="Tostop"
+			not-null="true"
+		>
+			<column name="toStop_id" />
+		</many-to-one>
+		<many-to-one
+			class="GtfsRoutes"
+			name="Fromroute"
+			not-null="true"
+		>
+			<column name="fromRoute_id" />
+		</many-to-one>
+		<many-to-one
+			class="GtfsTrips"
+			name="TotripAgencyid"
+			not-null="true"
+		>
+			<column name="toTrip_agencyId" />
+		</many-to-one>
+	</class>
+</hibernate-mapping>

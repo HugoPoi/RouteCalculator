@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+
+<hibernate-mapping package="fr.esgi.routecalculator.gtfscalculator">
+	<class name="GtfsAgencies" table="gtfs_agencies">
+		<id
+			column="id"
+			name="Id"
+			type="string"
+		>
+			<generator class="vm" />
+		</id>
+		<property
+			column="timezone"
+			length="255"
+			name="Timezone"
+			not-null="false"
+			type="string"
+		 />
+		<property
+			column="phone"
+			length="255"
+			name="Phone"
+			not-null="false"
+			type="string"
+		 />
+		<property
+			column="name"
+			length="255"
+			name="Name"
+			not-null="false"
+			type="string"
+		 />
+		<property
+			column="fareUrl"
+			length="255"
+			name="FareUrl"
+			not-null="false"
+			type="string"
+		 />
+		<property
+			column="lang"
+			length="255"
+			name="Lang"
+			not-null="false"
+			type="string"
+		 />
+		<property
+			column="url"
+			length="255"
+			name="Url"
+			not-null="false"
+			type="string"
+		 />
+
+		<set inverse="true" name="GtfsRoutesSet">
+			<key column="agency" />
+			<one-to-many class="GtfsRoutes" />
+		</set>
+	</class>
+</hibernate-mapping>

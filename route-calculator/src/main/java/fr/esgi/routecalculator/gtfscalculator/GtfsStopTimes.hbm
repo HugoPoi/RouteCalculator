@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+
+<hibernate-mapping package="fr.esgi.routecalculator.gtfscalculator">
+	<class name="GtfsStopTimes" table="gtfs_stop_times">
+		<id
+			column="gid"
+			name="Gid"
+			type="integer"
+		>
+			<generator class="vm" />
+		</id>
+		<property
+			column="shapeDistTraveled"
+			length="22"
+			name="ShapeDistTraveled"
+			not-null="false"
+			type="java.lang.Double"
+		 />
+		<property
+			column="stopHeadsign"
+			length="255"
+			name="StopHeadsign"
+			not-null="false"
+			type="string"
+		 />
+		<property
+			column="dropOffType"
+			length="10"
+			name="DropOffType"
+			not-null="false"
+			type="integer"
+		 />
+		<property
+			column="departureTime"
+			length="10"
+			name="DepartureTime"
+			not-null="false"
+			type="integer"
+		 />
+		<property
+			column="pickupType"
+			length="10"
+			name="PickupType"
+			not-null="false"
+			type="integer"
+		 />
+		<property
+			column="stopSequence"
+			length="10"
+			name="StopSequence"
+			not-null="false"
+			type="integer"
+		 />
+		<property
+			column="arrivalTime"
+			length="10"
+			name="ArrivalTime"
+			not-null="false"
+			type="integer"
+		 />
+		<property
+			column="routeShortName"
+			length="255"
+			name="RouteShortName"
+			not-null="false"
+			type="string"
+		 />
+		<property
+			column="timepoint"
+			length="10"
+			name="Timepoint"
+			not-null="false"
+			type="integer"
+		 />
+
+		<many-to-one
+			class="GtfsTrips"
+			name="TripAgencyid"
+			not-null="true"
+		>
+			<column name="trip_agencyId" />
+			<column name="trip_id" />
+		</many-to-one>
+		<many-to-one
+			class="GtfsStops"
+			name="Stop"
+			not-null="true"
+		>
+			<column name="stop_agencyId" />
+			<column name="stop_id" />
+		</many-to-one>
+	</class>
+</hibernate-mapping>

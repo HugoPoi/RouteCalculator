@@ -1,0 +1,4 @@
+package=fr.esgi.routecalculator.gtfscalculator
+databaseUrl=jdbc:mysql://127.0.0.1/gtfsratp
+driver=com.mysql.jdbc.Driver
+username=root

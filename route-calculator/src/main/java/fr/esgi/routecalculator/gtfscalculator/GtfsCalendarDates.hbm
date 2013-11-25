@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+
+<hibernate-mapping package="fr.esgi.routecalculator.gtfscalculator">
+	<class name="GtfsCalendarDates" table="gtfs_calendar_dates">
+		<id
+			column="gid"
+			name="Gid"
+			type="integer"
+		>
+			<generator class="vm" />
+		</id>
+		<property
+			column="serviceId_id"
+			length="255"
+			name="ServiceidId"
+			not-null="false"
+			type="string"
+		 />
+		<property
+			column="exceptionType"
+			length="10"
+			name="ExceptionType"
+			not-null="false"
+			type="integer"
+		 />
+		<property
+			column="serviceId_agencyId"
+			length="50"
+			name="ServiceidAgencyid"
+			not-null="false"
+			type="string"
+		 />
+		<property
+			column="date"
+			length="8"
+			name="Date"
+			not-null="false"
+			type="string"
+		 />
+	</class>
+</hibernate-mapping>

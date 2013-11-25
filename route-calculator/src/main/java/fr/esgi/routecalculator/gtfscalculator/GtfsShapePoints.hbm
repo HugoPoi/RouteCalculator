@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+
+<hibernate-mapping package="fr.esgi.routecalculator.gtfscalculator">
+	<class name="GtfsShapePoints" table="gtfs_shape_points">
+		<id
+			column="gid"
+			name="Gid"
+			type="integer"
+		>
+			<generator class="vm" />
+		</id>
+		<property
+			column="shapeId_id"
+			length="255"
+			name="ShapeidId"
+			not-null="false"
+			type="string"
+		 />
+		<property
+			column="lon"
+			length="22"
+			name="Lon"
+			not-null="false"
+			type="java.lang.Double"
+		 />
+		<property
+			column="distTraveled"
+			length="22"
+			name="DistTraveled"
+			not-null="false"
+			type="java.lang.Double"
+		 />
+		<property
+			column="sequence"
+			length="10"
+			name="Sequence"
+			not-null="false"
+			type="integer"
+		 />
+		<property
+			column="shapeId_agencyId"
+			length="50"
+			name="ShapeidAgencyid"
+			not-null="false"
+			type="string"
+		 />
+		<property
+			column="lat"
+			length="22"
+			name="Lat"
+			not-null="false"
+			type="java.lang.Double"
+		 />
+	</class>
+</hibernate-mapping>

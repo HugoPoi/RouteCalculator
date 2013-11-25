@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+
+<hibernate-mapping package="fr.esgi.routecalculator.gtfscalculator">
+	<class name="GtfsFareAttributes" table="gtfs_fare_attributes">
+		<composite-id class="GtfsFareAttributesPK" name="Id">
+			<key-property
+				column="agencyId"
+				name="AgencyId"
+				type="string"
+			 />
+			<key-property
+				column="id"
+				name="Id"
+				type="string"
+			 />
+		</composite-id>
+		<property
+			column="transfers"
+			length="10"
+			name="Transfers"
+			not-null="false"
+			type="integer"
+		 />
+		<property
+			column="price"
+			length="12"
+			name="Price"
+			not-null="false"
+			type="java.lang.Float"
+		 />
+		<property
+			column="transferDuration"
+			length="10"
+			name="TransferDuration"
+			not-null="false"
+			type="integer"
+		 />
+		<property
+			column="currencyType"
+			length="255"
+			name="CurrencyType"
+			not-null="false"
+			type="string"
+		 />
+		<property
+			column="paymentMethod"
+			length="10"
+			name="PaymentMethod"
+			not-null="false"
+			type="integer"
+		 />
+		<property
+			column="journeyDuration"
+			length="10"
+			name="JourneyDuration"
+			not-null="false"
+			type="integer"
+		 />
+	</class>
+</hibernate-mapping>

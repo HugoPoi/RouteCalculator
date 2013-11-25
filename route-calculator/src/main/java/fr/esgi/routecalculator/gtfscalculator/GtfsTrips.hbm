@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+
+<hibernate-mapping package="fr.esgi.routecalculator.gtfscalculator">
+	<class name="GtfsTrips" table="gtfs_trips">
+		<composite-id class="GtfsTripsPK" name="Id">
+			<key-property
+				column="agencyId"
+				name="AgencyId"
+				type="string"
+			 />
+			<key-property
+				column="id"
+				name="Id"
+				type="string"
+			 />
+		</composite-id>
+		<property
+			column="serviceId_id"
+			length="255"
+			name="ServiceidId"
+			not-null="false"
+			type="string"
+		 />
+		<property
+			column="directionId"
+			length="255"
+			name="DirectionId"
+			not-null="false"
+			type="string"
+		 />
+		<property
+			column="wheelchairAccessible"
+			length="10"
+			name="WheelchairAccessible"
+			not-null="false"
+			type="integer"
+		 />
+		<property
+			column="tripHeadsign"
+			length="255"
+			name="TripHeadsign"
+			not-null="false"
+			type="string"
+		 />
+		<property
+			column="shapeId_id"
+			length="255"
+			name="ShapeidId"
+			not-null="false"
+			type="string"
+		 />
+		<property
+			column="tripShortName"
+			length="255"
+			name="TripShortName"
+			not-null="false"
+			type="string"
+		 />
+		<property
+			column="blockId"
+			length="255"
+			name="BlockId"
+			not-null="false"
+			type="string"
+		 />
+		<property
+			column="shapeId_agencyId"
+			length="50"
+			name="ShapeidAgencyid"
+			not-null="false"
+			type="string"
+		 />
+		<property
+			column="routeShortName"
+			length="255"
+			name="RouteShortName"
+			not-null="false"
+			type="string"
+		 />
+		<property
+			column="serviceId_agencyId"
+			length="50"
+			name="ServiceidAgencyid"
+			not-null="false"
+			type="string"
+		 />
+
+		<many-to-one
+			class="GtfsRoutes"
+			name="Route"
+			not-null="true"
+		>
+			<column name="route_agencyId" />
+			<column name="route_id" />
+		</many-to-one>
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+
+<hibernate-mapping package="fr.esgi.routecalculator.gtfscalculator">
+	<class name="GtfsRoutes" table="gtfs_routes">
+		<composite-id class="GtfsRoutesPK" name="Id">
+			<key-property
+				column="agencyId"
+				name="AgencyId"
+				type="string"
+			 />
+			<key-property
+				column="id"
+				name="Id"
+				type="string"
+			 />
+		</composite-id>
+		<property
+			column="textColor"
+			length="255"
+			name="TextColor"
+			not-null="false"
+			type="string"
+		 />
+		<property
+			column="color"
+			length="255"
+			name="Color"
+			not-null="false"
+			type="string"
+		 />
+		<property
+			column="description"
+			name="Description"
+			not-null="false"
+			type="string"
+		 />
+		<property
+			column="longName"
+			length="255"
+			name="LongName"
+			not-null="false"
+			type="string"
+		 />
+		<property
+			column="type"
+			length="10"
+			name="Type"
+			not-null="false"
+			type="integer"
+		 />
+		<property
+			column="shortName"
+			length="255"
+			name="ShortName"
+			not-null="false"
+			type="string"
+		 />
+		<property
+			column="url"
+			length="255"
+			name="Url"
+			not-null="false"
+			type="string"
+		 />
+
+		<many-to-one
+			class="GtfsAgencies"
+			name="Agency"
+			not-null="true"
+		>
+			<column name="agency" />
+		</many-to-one>
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+
+<hibernate-mapping package="fr.esgi.routecalculator.gtfscalculator">
+	<class name="GtfsFrequencies" table="gtfs_frequencies">
+		<id
+			column="gid"
+			name="Gid"
+			type="integer"
+		>
+			<generator class="vm" />
+		</id>
+		<property
+			column="startTime"
+			length="10"
+			name="StartTime"
+			not-null="false"
+			type="integer"
+		 />
+		<property
+			column="labelOnly"
+			length="10"
+			name="LabelOnly"
+			not-null="false"
+			type="integer"
+		 />
+		<property
+			column="exactTimes"
+			length="10"
+			name="ExactTimes"
+			not-null="false"
+			type="integer"
+		 />
+		<property
+			column="headwaySecs"
+			length="10"
+			name="HeadwaySecs"
+			not-null="false"
+			type="integer"
+		 />
+		<property
+			column="endTime"
+			length="10"
+			name="EndTime"
+			not-null="false"
+			type="integer"
+		 />
+
+		<many-to-one
+			class="GtfsTrips"
+			name="TripAgencyid"
+			not-null="true"
+		>
+			<column name="trip_agencyId" />
+			<column name="trip_id" />
+		</many-to-one>
+	</class>
+</hibernate-mapping>

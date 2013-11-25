@@ -1,5 +1,8 @@
 package fr.esgi.routecalculator.gtfscalculator;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.hibernate.SessionFactory;
@@ -22,6 +25,8 @@ public class PathGtfsImpl implements IPathGtfs {
 	Integer currentStopId;
 	Integer currentTripId;
 	StopTime currentStopTime;
+	
+	
 	
 	//Temps total de ce chemin en secondes
 	int totaltime;
@@ -96,6 +101,7 @@ public class PathGtfsImpl implements IPathGtfs {
 		return null;
 	}
 
+	@SuppressWarnings("null")
 	@Override
 	public List<StopTime> getPossibleConnectionsStopId() {
 		//List possibilities = new LinkedList<StopTime>();
@@ -115,12 +121,41 @@ public class PathGtfsImpl implements IPathGtfs {
 			//rÃ©cupÃ©ration des stops;
 			@SuppressWarnings("rawtypes")
 			List stops = session.createQuery("from Stop as stop where stop.parentStation = ?").setString(0, parentStopIdDeparture.toString()).list();
+			
+			//Création d'une liste de type StopsTimes
+			//Création d'une nouvelle session.createQuery, qui prend en filtre l'heure de départ et les différents stop 
+			//Il ne faut récupérer que le premier stopTime pour une station celui le plus proche de l'heure de départ
+			/*
+			 * SELECT * FROM `gtfs_stop_times` as B WHERE `stop_id` like "1674"
+			and `arrivalTime` > 1020
+			and `arrivalTime` = (select max(`arrivalTime`)
+			                                from `gtfs_stop_times` as A where A.gid = B.gid)
+			 */
 			session.close();
+			//Cette boucle doit être supprimer au profit de celle au dessus
+			List<StopTime> Liststoptime = new ArrayList<StopTime>();
+			
+			//Le plus petit stopTime pour un stop en fonction de la date de départ 
+			StopTime minTimeStopTime;
+
 			for (Object possibleLines : stops) {
-				return dao.getStopTimesForStop((Stop) possibleLines);
+				minTimeStopTime = new StopTime();
+				minTimeStopTime.setDepartureTime(9999999);
+				for (StopTime stoptime : dao.getStopTimesForStop((Stop) possibleLines) ){	
+						if(stoptime.getDepartureTime() < minTimeStopTime.getDepartureTime()){
+							if(stoptime.getDepartureTime() >= departTime){
+							minTimeStopTime = stoptime;
+						}
+						}
+				}
+				Liststoptime.add(minTimeStopTime);
 			}
+			return Liststoptime;
 		}else{
-			//Sinon process normal
+			@SuppressWarnings("rawtypes")
+			List stops = session.createQuery("from Stop as stop where stop.id = ?").setString(0, currentStopId.toString()).list();
+			
+			
 		}
 		return null;
 	}
