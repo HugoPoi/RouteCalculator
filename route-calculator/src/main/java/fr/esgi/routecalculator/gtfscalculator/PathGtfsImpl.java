@@ -19,7 +19,7 @@ public class PathGtfsImpl implements IPathGtfs {
 	
 	PathGtfsImpl last;
 	
-	static int parentStopIdArrival;
+	static String parentStopIdArrival;
 	String parentStopIdDeparture;
 
 	
@@ -29,8 +29,6 @@ public class PathGtfsImpl implements IPathGtfs {
 	Stop currentStop;
 	StopTime currentStopTime;
 	
-	
-	
 	//Temps total de ce chemin en secondes
 	int totaltime;
 	
@@ -38,12 +36,12 @@ public class PathGtfsImpl implements IPathGtfs {
 	static SessionFactory sessionFactory;
 	
 	//constructeur d'initialisation de calcul (appel√© une seul fois)
-	public PathGtfsImpl(String parentStopIdDeparture,int parentStopIdArrival, SessionFactory inSessionFactory) {
+	public PathGtfsImpl(String parentStopIdDeparture,String parentStopIdArrival, SessionFactory inSessionFactory) {
 		super();
 		sessionFactory = inSessionFactory;
 		PathGtfsImpl.dao = new HibernateGtfsFactory(inSessionFactory).getDao();
-		PathGtfsImpl.parentStopIdArrival = parentStopIdArrival;
-		this.parentStopIdDeparture = parentStopIdDeparture;
+		PathGtfsImpl.parentStopIdArrival = getParentStopIdForNameStop(parentStopIdArrival);
+		this.parentStopIdDeparture = getParentStopIdForNameStop(parentStopIdDeparture);
 		totaltime = 0;
 	}
 	
@@ -75,6 +73,22 @@ public class PathGtfsImpl implements IPathGtfs {
 		this.parentStopIdDeparture = id;
 	}
 
+	static private String getParentStopIdForNameStop(String name){
+		
+		Session session = sessionFactory.getCurrentSession();
+		session.beginTransaction();
+		@SuppressWarnings("rawtypes")
+		List<Stop> stops = session.createQuery("from Stop as stop where stop.name = ?").setString(0, name).list();
+		session.close();
+		if(stops.isEmpty()){
+			System.out.println("Erreur, le nom de cette station n'existe pas !");
+		}else{
+				System.out.println(stops.get(0).getParentStation().toString());
+				return stops.get(0).getParentStation().toString();
+		}
+		return null;
+	}
+	
 	public int compareTo(IPathGtfs o) {
 		// TODO Auto-generated method stub
 		return 0;
@@ -181,7 +195,10 @@ public class PathGtfsImpl implements IPathGtfs {
 				for (StopTime stoptime : dao.getStopTimesForStop((Stop) stopRead) ){	
 					if(stoptime.getDepartureTime() > currentStopTime.getArrivalTime()){
 						if(stoptime.getDepartureTime() <= minTimeStopTime.getDepartureTime()){
-						minTimeStopTime = stoptime;
+							//On ne rÈcupÈre pas le stopTime qui a ÈtÈ parcouru just avant 
+							if(last != null && !last.currentStopTime.equals(stoptime)){
+								minTimeStopTime = stoptime;
+							}
 					}
 				}
 			}

@@ -16,25 +16,7 @@ public class Application {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		IPathGtfs Test = new PathGtfsImpl("2009", 1999, HibernateUtil.getSessionFactory());
-		
-		//Premier passage
-		/*for (StopTime toto : Test.getPossibleConnectionsStopId()) {
-			System.out.println(toto.toString());
-		}*/
-		
-		//IdStop 1629 : Alexandre Dumas 
-		StopTime testStoptimes = new StopTime();
-		testStoptimes.setArrivalTime(67208);
-		Stop testStop = new Stop();
-		testStop.setParentStation("1978");
-		Test.setCurrentStopTime(testStoptimes);
-		Test.setCurrentStop(testStop);
-		//For the test
-		
-		//Second et autres passages
-		for (StopTime toto : Test.getPossibleConnectionsStopId()) {
-			System.out.println(toto.toString());
-		}
+		Graph premierGraph = new Graph();
+		premierGraph.findRoute("Alexandre-Dumas", "Belleville");
 	}
 }
