@@ -101,10 +101,10 @@ public class PathGtfsImpl implements IPathGtfs {
 	}
 
 	public int compareTo(IPathGtfs o) {
-		if(this.totaltime > o.getTotalTime()){
+		if(this.totaltime < o.getTotalTime()){
 			return 1;
 		}
-		if(this.totaltime < o.getTotalTime()){
+		if(this.totaltime > o.getTotalTime()){
 			return -1;
 		}
 		return 0;
@@ -173,7 +173,7 @@ public class PathGtfsImpl implements IPathGtfs {
 		StringBuffer out = new StringBuffer();
 		PathGtfsImpl enext = this;
 		do{
-			if(enext.currentStopTime != null) out.append(enext.currentStopTime.getStop().getName() + "\n");
+			if(enext.currentStopTime != null) out.append(enext.currentStopTime.getStop().getName() + enext.currentStopTime.getTrip().getId() + "\n");
 			enext = enext.last;
 		}
 		while(enext != null);
