@@ -2,95 +2,111 @@ package fr.esgi.routecalculator.gtfscalculator;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Stack;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.classic.Session;
+import org.onebusaway.gtfs.model.Route;
 import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.StopTime;
 import org.onebusaway.gtfs.model.Trip;
 import org.onebusaway.gtfs.services.GtfsMutableRelationalDao;
 import org.onebusaway.gtfs.services.HibernateGtfsFactory;
 
+import fr.esgi.routecalculator.interfaces.INode;
 import fr.esgi.routecalculator.interfaces.gtfs.IPathGtfs;
 
 public class PathGtfsImpl implements IPathGtfs {
-	
+
 	PathGtfsImpl last;
-	
+
 	static String parentStopIdArrival;
+	static GregorianCalendar departureTime;
+	static int departureTimeInSeconds;
+	
 	String parentStopIdDeparture;
 
-	
-	String currentStopId;
-	int currentTripId;
-	
 	Stop currentStop;
 	StopTime currentStopTime;
-	
-	//Temps total de ce chemin en secondes
+
+	// Temps total de ce chemin en secondes
 	int totaltime;
-	
+
 	static GtfsMutableRelationalDao dao;
-	static SessionFactory sessionFactory;
-	
-	//constructeur d'initialisation de calcul (appel√© une seul fois)
-	public PathGtfsImpl(String parentStopIdDeparture,String parentStopIdArrival, SessionFactory inSessionFactory) {
+
+	// constructeur d'initialisation de calcul (appel√© une seul fois)
+	public PathGtfsImpl(String parentStopIdDeparture,
+			String parentStopIdArrival, GregorianCalendar departureTimeIn) {
 		super();
-		sessionFactory = inSessionFactory;
-		PathGtfsImpl.dao = new HibernateGtfsFactory(inSessionFactory).getDao();
+		departureTime = departureTimeIn;
+		PathGtfsImpl.dao = new HibernateGtfsFactory(HibernateUtil.getSessionFactory()).getDao();
 		PathGtfsImpl.parentStopIdArrival = getParentStopIdForNameStop(parentStopIdArrival);
 		this.parentStopIdDeparture = getParentStopIdForNameStop(parentStopIdDeparture);
 		totaltime = 0;
+		
+		java.util.GregorianCalendar calendar = new GregorianCalendar();
+		departureTimeInSeconds = calendar.get(Calendar.HOUR_OF_DAY) * 3600
+				+ calendar.get(Calendar.MINUTE) * 60
+				+ calendar.get(Calendar.SECOND);
+		System.out.println("Heure de d√©part en seconde : " + departureTimeInSeconds);
 	}
-	
-	//constructeur d'incr√©mentation de chemin
-	public PathGtfsImpl(PathGtfsImpl inLast, String stopId, int tripId){
+
+	// constructeur d'incr√©mentation de chemin
+	public PathGtfsImpl(PathGtfsImpl inLast, StopTime takenStopTime) throws Exception {
 		this.last = inLast;
-		currentStopId = stopId;
-		currentTripId = tripId;
+		this.currentStopTime = takenStopTime;
+		//Take the StopTime and Forward +1
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		
-		int triptime = 0;//a impl√©menter
-		//calcul du temps.
-		this.totaltime = last.totaltime + triptime;
-	}
-	
-	public void setCurrentStop (Stop stop){
-		this.currentStop =stop;
-	}
-
-	
-	public void setCurrentStopTime (StopTime stopTime){
-		this.currentStopTime = stopTime;
-	}
-	
-	public void setCurrentStopId (String id){
-		this.currentStopId = id;
-	}
-
-	public void setParentStopIdDeparture (String id){
-		this.parentStopIdDeparture = id;
-	}
-
-	static private String getParentStopIdForNameStop(String name){
+		StopTime getNextStopTime = (StopTime) session.createQuery("from StopTime as stoptime where stoptime.trip = :trip AND stoptime.stopSequence = :position")
+			.setEntity("trip", takenStopTime.getTrip())
+			.setInteger("position", takenStopTime.getStopSequence()+1).uniqueResult();
 		
-		Session session = sessionFactory.getCurrentSession();
+		if(getNextStopTime == null){
+			throw new Exception("Train arriv√© au terminus");
+		}else{
+			int triptime = getNextStopTime.getArrivalTime() - takenStopTime.getDepartureTime();
+			if(last.last == null){
+				triptime += takenStopTime.getDepartureTime() - departureTimeInSeconds;
+			}
+			this.totaltime = last.totaltime + triptime;
+			this.currentStop = getNextStopTime.getStop();
+			this.parentStopIdDeparture = this.currentStop.getParentStation();
+		}
+		
+	}
+
+	static private String getParentStopIdForNameStop(String name) {
+
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		session.beginTransaction();
 		@SuppressWarnings("rawtypes")
-		List<Stop> stops = session.createQuery("from Stop as stop where stop.name = ?").setString(0, name).list();
+		List<Stop> stops = session
+				.createQuery("from Stop as stop where stop.name = ?")
+				.setString(0, name).list();
 		session.close();
-		if(stops.isEmpty()){
-			System.out.println("Erreur, le nom de cette station n'existe pas !");
-		}else{
-				System.out.println(stops.get(0).getParentStation().toString());
-				return stops.get(0).getParentStation().toString();
+		if (stops.isEmpty()) {
+			System.out
+					.println("Erreur, le nom de cette station n'existe pas !");
+		} else {
+			System.out.println(stops.get(0).getParentStation().toString());
+			return stops.get(0).getParentStation().toString();
 		}
 		return null;
 	}
-	
+
 	public int compareTo(IPathGtfs o) {
-		// TODO Auto-generated method stub
+		if(this.totaltime > o.getTotalTime()){
+			return 1;
+		}
+		if(this.totaltime < o.getTotalTime()){
+			return -1;
+		}
 		return 0;
 	}
 
@@ -100,117 +116,69 @@ public class PathGtfsImpl implements IPathGtfs {
 	}
 
 	@Override
+	public int getTotalTime() {
+		return totaltime;
+	}
+
+	@SuppressWarnings({ "null", "unchecked" })
+	@Override
+	public List<StopTime> getPossibleConnectionsStopId() {
+		List<StopTime> possibilities = new LinkedList<StopTime>();
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
+		
+		int currentRealTimeInSeconds = departureTimeInSeconds + totaltime;
+
+			@SuppressWarnings("rawtypes")
+			List stops = session
+					.createQuery(
+							"from Stop as stop where stop.parentStation = ?")
+					.setString(0, parentStopIdDeparture).list();
+
+			for (Object possibleLines : stops) {
+				
+				List<Route> routesList= session.createQuery(
+						"select stoptime.trip.route from StopTime as stoptime where stoptime.stop = :stop AND stoptime.departureTime >= :currenttime group by stoptime.trip.route")
+						.setEntity("stop", possibleLines)
+						.setInteger("currenttime", currentRealTimeInSeconds).list();
+				
+				for (Object possibleRoute : routesList) {
+					possibilities.add((StopTime) session.createQuery("from StopTime as stoptime where stoptime.stop = :stop AND stoptime.departureTime >= :currenttime AND stoptime.trip.route = :route order by stoptime.departureTime")
+						.setEntity("stop", possibleLines)
+						.setInteger("currenttime", currentRealTimeInSeconds)
+						.setEntity("route", possibleRoute).setMaxResults(1).uniqueResult());
+				}
+			}
+
+			return possibilities;
+	}
+
+	@Override
 	public Stop getCurrentStop() {
-		// TODO Auto-generated method stub
-		return null;
+		return currentStop;
 	}
 
 	@Override
 	public Trip getCurrentTrip() {
-		// TODO Auto-generated method stub
-		return null;
+		return currentStopTime.getTrip();
 	}
 
 	@Override
-	public int getCurrentStopId() {
-		// TODO Auto-generated method stub
-		return 0;
+	public Boolean isCompleted() {
+		return (parentStopIdDeparture.equals(parentStopIdArrival));
 	}
-
+	
 	@Override
-	public int getCurrentTripId() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getTotalTime() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public List<Stop> getPossibleConnections() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@SuppressWarnings("null")
-	@Override
-	public List<StopTime> getPossibleConnectionsStopId() {
-		//List possibilities = new LinkedList<StopTime>();
-		Session session = sessionFactory.getCurrentSession();
-		session.beginTransaction();
-		if(this.currentStopTime == null){
-			
-			//CrÈation de la date de dÈpart
-			int departTime = 0;
-			java.util.GregorianCalendar calendar = new GregorianCalendar();
-			java.util.Date time  = calendar.getTime();
-			departTime = calendar.get(Calendar.HOUR_OF_DAY)*3600 + calendar.get(Calendar.MINUTE)*60 + calendar.get(Calendar.SECOND);
-			System.out.println("Heure de dÈpart en seconde : " + departTime);
-			
-			
-			//Quand on commence appel√© une seul fois
-			//r√©cup√©ration des stops;
-			@SuppressWarnings("rawtypes")
-			List stops = session.createQuery("from Stop as stop where stop.parentStation = ?").setString(0, parentStopIdDeparture).list();
-			
-			session.close();
-			//Cette boucle doit Ítre supprimer au profit de celle au dessus
-			List<StopTime> Liststoptime = new ArrayList<StopTime>();
-			
-			//Le plus petit stopTime pour un stop en fonction de la date de dÈpart 
-			StopTime minTimeStopTime;
-
-			for (Object possibleLines : stops) {
-				boolean firstPassage = true;
-				minTimeStopTime = new StopTime();
-				minTimeStopTime.setDepartureTime(9999999);
-				for (StopTime stoptime : dao.getStopTimesForStop((Stop) possibleLines) ){
-						if(stoptime.getDepartureTime() < minTimeStopTime.getDepartureTime()){
-							if(stoptime.getDepartureTime() >= departTime){
-								minTimeStopTime = stoptime;
-							}
-						}
-				}
-				if(minTimeStopTime.getDepartureTime() != 9999999){
-					Liststoptime.add(minTimeStopTime);
-				}else{
-					System.out.println("Le Stop n'a plus de StopTime ‡ cette heure");
-				}
-			}
-			return Liststoptime;
-		}else{
-			@SuppressWarnings("rawtypes")
-			List<Stop> stops = session.createQuery("from Stop as stop where stop.parentStation = ?").setString(0, currentStop.getParentStation().toString()).list();
-			session.close();
-			
-			StopTime minTimeStopTime;
-
-			List<StopTime> Liststoptime = new ArrayList<StopTime>();
-			for (Stop stopRead : stops){
-				minTimeStopTime = new StopTime();
-				minTimeStopTime.setDepartureTime(9999999);
-				for (StopTime stoptime : dao.getStopTimesForStop((Stop) stopRead) ){	
-					if(stoptime.getDepartureTime() > currentStopTime.getArrivalTime()){
-						if(stoptime.getDepartureTime() <= minTimeStopTime.getDepartureTime()){
-							//On ne rÈcupÈre pas le stopTime qui a ÈtÈ parcouru just avant 
-							if(last != null && !last.currentStopTime.equals(stoptime)){
-								minTimeStopTime = stoptime;
-							}
-					}
-				}
-			}
-				if(minTimeStopTime.getDepartureTime() != 9999999){
-					Liststoptime.add(minTimeStopTime);
-				}else{
-					System.out.println("Le Stop n'a plus de StopTime ‡ cette heure");
-				}
-			}
-			
-			return Liststoptime;	
+	public String toString() {
+		StringBuffer out = new StringBuffer();
+		PathGtfsImpl enext = this;
+		do{
+			if(enext.currentStopTime != null) out.append(enext.currentStopTime.getStop().getName() + "\n");
+			enext = enext.last;
 		}
+		while(enext != null);
+		
+		return out.toString();
 	}
-
+	
 }

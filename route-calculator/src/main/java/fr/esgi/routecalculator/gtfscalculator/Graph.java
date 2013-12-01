@@ -1,5 +1,6 @@
 package fr.esgi.routecalculator.gtfscalculator;
 
+import java.util.GregorianCalendar;
 import java.util.PriorityQueue;
 
 import org.onebusaway.gtfs.model.Stop;
@@ -12,55 +13,27 @@ public class Graph {
 	Graph (){}
 
 
-	public String findRoute(String start, String target){
-		
-		PathGtfsImpl premiereRoute = new PathGtfsImpl(start, target, HibernateUtil.getSessionFactory());
+	public void findRoute(String start, String target){
 		
 		PriorityQueue<PathGtfsImpl> routes = new PriorityQueue<>();
+		routes.add(new PathGtfsImpl(start, target, new GregorianCalendar()));
 		
-		//Premier passage
-		for (StopTime toto : premiereRoute.getPossibleConnectionsStopId()) {
-			routes.add(new PathGtfsImpl(premiereRoute, toto.getStop().getId().toString(), 0));
-		}
-		
-		
-		//IdStop 1629 : Alexandre Dumas 
-		StopTime testStoptimes = new StopTime();
-		testStoptimes.setArrivalTime(67208);
-		Stop testStop = new Stop();
-		testStop.setParentStation("1978");
-		premiereRoute.setCurrentStopTime(testStoptimes);
-		premiereRoute.setCurrentStop(testStop);
-		//For the test
-		
-		//Second et autres passages
-		for (StopTime toto : premiereRoute.getPossibleConnectionsStopId()) {
-			System.out.println(toto.toString());
-		}
-		
-		return null;
-		/*
-		Node startNode = nodes.get(start);
-		Node endNode = nodes.get(target);
-		PriorityQueue<Route> routes = new PriorityQueue<>();
-		
-		//init firsts routes
-		Route route = new Route(startNode);
-		for(IRelation r : startNode.getRelations()){
-			routes.add(new Route(route, r));
-		}
-		
-		//search
-		Route selectedRoute = null;
+		PathGtfsImpl selectedRoute = null;
 		do{
 			selectedRoute = routes.remove();
-			for(IRelation rnext : selectedRoute.getNextPossibleNodeMove(endNode)){
-				routes.add(new Route(selectedRoute,rnext));
+			for (StopTime possibility: selectedRoute.getPossibleConnectionsStopId()) {
+				try {
+					PathGtfsImpl newRoute = new PathGtfsImpl(selectedRoute, possibility);
+					routes.add(newRoute);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			
-		}while(!selectedRoute.isCompleted(endNode));
-		return selectedRoute;
-	*/
+		}while(!selectedRoute.isCompleted());
+		
+		System.out.println(selectedRoute);
 	}
 
 

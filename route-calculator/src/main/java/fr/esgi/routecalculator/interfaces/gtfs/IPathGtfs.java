@@ -12,17 +12,10 @@ public interface IPathGtfs extends Comparable<IPathGtfs>{
 	Stop getCurrentStop();
 	Trip getCurrentTrip();
 	
-	int getCurrentStopId();
-	int getCurrentTripId();
-	public void setParentStopIdDeparture (String id);
-	public void setCurrentStopId (String id);
-	public void setCurrentStopTime (StopTime stopTime);
-	public void setCurrentStop (Stop stop);
-	
 	public int compareTo(IPathGtfs o);
-	
-
 	int getTotalTime();
-	List<Stop> getPossibleConnections();
+	
+	Boolean isCompleted();
+	
 	public List<StopTime> getPossibleConnectionsStopId();
 }
