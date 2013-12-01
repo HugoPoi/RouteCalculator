@@ -1,6 +1,7 @@
 package fr.esgi.routecalculator.gtfscalculator;
 
 import java.io.File;
+import java.sql.SQLException;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -14,9 +15,10 @@ public class Application {
 
 	/**
 	 * @param args
+	 * @throws SQLException 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws SQLException {
 		Graph premierGraph = new Graph();
-		premierGraph.findRoute("Alexandre-Dumas", "Belleville");
+		premierGraph.findRoute("Nation", "Victor Hugo");
 	}
 }
