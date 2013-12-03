@@ -1,6 +1,6 @@
 package fr.esgi.routecalculator.gtfscalculator;
 
-import java.sql.SQLException;
+import java.util.GregorianCalendar;
 import java.util.PriorityQueue;
 
 import org.onebusaway.gtfs.model.Stop;
@@ -11,43 +11,29 @@ import fr.esgi.routecalculator.interfaces.gtfs.IPathGtfs;
 public class Graph {
 	
 	Graph (){}
-	
-	public static int departTime;
-	public String arrival;
-	public static String parentIdDeparture;
 
-	public String findRoute(String start, String target) throws SQLException{
-		
-		PathGtfsImpl premiereRoute = new PathGtfsImpl(start, HibernateUtil.getSessionFactory());
-		arrival = PathGtfsImpl.getParentStopIdForNameStop(target);
+
+	public void findRoute(String start, String target){
 		
 		PriorityQueue<PathGtfsImpl> routes = new PriorityQueue<>();
-		//Premier passage
-		for (StopTime toto : premiereRoute.getPossibleConnectionsStopId()) {
-			routes.add(new PathGtfsImpl(premiereRoute, toto));
-		}
+		routes.add(new PathGtfsImpl(start, target, new GregorianCalendar()));
 		
-		//search
 		PathGtfsImpl selectedRoute = null;
 		do{
 			selectedRoute = routes.remove();
-			if(!selectedRoute.plusDeRoutePossible){
-				System.out.println("La priority Queue utilise la stop name : " + selectedRoute.currentStop.getName());
-				for(StopTime rnext : selectedRoute.getPossibleConnectionsStopId()){
-					if(rnext != null){
-						routes.add(new PathGtfsImpl(selectedRoute,rnext));
-					}
+			for (StopTime possibility: selectedRoute.getPossibleConnectionsStopId()) {
+				try {
+					PathGtfsImpl newRoute = new PathGtfsImpl(selectedRoute, possibility);
+					routes.add(newRoute);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
-		}while(!selectedRoute.isCompleted(arrival));
-		
-		while(selectedRoute.last != null){
-			System.out.println(selectedRoute.getCurrentStop().getName());
-			selectedRoute = selectedRoute.last;
-		}
 			
-		return target;
-
+		}while(!selectedRoute.isCompleted());
+		
+		System.out.println(selectedRoute);
 	}
 
 
