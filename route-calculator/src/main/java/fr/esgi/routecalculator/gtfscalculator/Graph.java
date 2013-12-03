@@ -6,8 +6,6 @@ import java.util.PriorityQueue;
 import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.StopTime;
 
-import fr.esgi.routecalculator.Route;
-import fr.esgi.routecalculator.interfaces.IRelation;
 import fr.esgi.routecalculator.interfaces.gtfs.IPathGtfs;
 
 public class Graph {

@@ -21,7 +21,7 @@ import org.onebusaway.gtfs.services.HibernateGtfsFactory;
 
 import com.mysql.jdbc.Connection;
 
-import fr.esgi.routecalculator.interfaces.IRoute;
+
 import fr.esgi.routecalculator.interfaces.gtfs.IPathGtfs;
 
 public class PathGtfsImpl implements IPathGtfs{
