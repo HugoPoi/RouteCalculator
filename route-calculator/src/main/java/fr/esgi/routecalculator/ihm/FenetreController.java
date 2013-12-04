@@ -14,8 +14,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import model.FenetreModel;
-import view.FenetreVue;
+import fr.esgi.routecalculator.gtfscalculator.Graph;
+import fr.esgi.routecalculator.ihm.FenetreVue;
 import net.sourceforge.jdatepicker.JDateComponentFactory;
 import net.sourceforge.jdatepicker.JDateComponent;
 
@@ -23,9 +23,9 @@ public class FenetreController implements ActionListener {
 
 	
 	private FenetreVue vue;
-	private FenetreModel model;
+	private Graph model;
 	
-	public FenetreController(FenetreVue vue, FenetreModel model){
+	public FenetreController(FenetreVue vue, Graph model){
 		this.vue = vue;
 		this.model = model;
 	}

@@ -7,11 +7,11 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.border.*;
 
-import controller.FenetreController;
-
 //import controller.FenetreController;
-//import model.FenetreModel;
-import model.FenetreModel;
+
+
+import fr.esgi.routecalculator.gtfscalculator.Graph;
+import fr.esgi.routecalculator.ihm.FenetreController;
 import net.sourceforge.jdatepicker.JDateComponentFactory;
 
 public class FenetreVue extends JFrame {	
@@ -26,9 +26,9 @@ public class FenetreVue extends JFrame {
 	 * static DateFormat = new SimpleDateFormat("yyyy-MM-dd)
 	 * */
 	private static final long serialVersionUID = 1L;
-	private FenetreModel        model; 
+	private Graph        model; 
 	private FenetreController    controller;
-	private Menu menu;
+//	private Menu menu;
 	
 	//declaration des variables
 	public JMenuBar menuBar;
@@ -47,10 +47,10 @@ public class FenetreVue extends JFrame {
 	public JTable resultat;
 	public JScrollPane scroller;
 	
-	public FenetreVue(FenetreModel model){
+	public FenetreVue(Graph model){
 		Image icone = Toolkit.getDefaultToolkit().getImage("./images/logo-ratp.gif");
 		this.setIconImage(icone);
-	//public FenetreVue(){	
+	public FenetreVue(){	
 		this.model = model;
 		
 		controller = new FenetreController(this,model);
@@ -212,7 +212,7 @@ public class FenetreVue extends JFrame {
 		g_recherche.gridy = 5;
 		this.getContentPane().add(recherche, g_recherche);
 		
-		//tableau d'affichage des resultats
+		/*tableau d'affichage des resultats
 		resultat = new JTable();
 		resultat.setShowGrid(true);
 		resultat.setShowHorizontalLines(true);
@@ -225,11 +225,8 @@ public class FenetreVue extends JFrame {
 		g_scroller.gridwidth = 5;
 		this.getContentPane().add(scroller, g_scroller);
 		scroller.setVisible(false);
+		*/
 
-		
-		//######################################################
-		//########### Disposition ##############################
-		//######################################################
 		
 	}
 
@@ -260,25 +257,6 @@ public class FenetreVue extends JFrame {
 		mntmQuitter.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.CTRL_DOWN_MASK + KeyEvent.SHIFT_DOWN_MASK));
 		mntmQuitter.addActionListener(controller);
 		mnFichier.add(mntmQuitter);
-		
-		/*mnEdition = new JMenu("Edition");
-		mnEdition.setMnemonic('E');
-		menuBar.add(mnEdition);
-		
-		mntmCopier = new JMenuItem("Copier");
-		mntmCopier.addActionListener(controller);
-		mntmCopier.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_MASK));
-		mnEdition.add(mntmCopier);
-		
-		mntmColler = new JMenuItem("Coller");
-		mntmColler.addActionListener(controller);
-		mntmColler.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_MASK));
-		mnEdition.add(mntmColler);
-		
-		mntmSupprimer = new JMenuItem("Supprimer");
-		mntmSupprimer.addActionListener(controller);
-		mntmSupprimer.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_MASK));
-		mnEdition.add(mntmSupprimer);*/
 		
 		mnPropos = new JMenu("\u00C0 Propos");
 		mnPropos.setMnemonic('P');
