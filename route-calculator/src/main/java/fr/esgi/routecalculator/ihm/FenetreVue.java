@@ -314,6 +314,7 @@ public class FenetreVue extends JFrame {
 	 * Tester la validité des entrées
 	 */
 	public boolean entreeValide(){
+		// TODO
 		return rootPaneCheckingEnabled;
 	}
 	

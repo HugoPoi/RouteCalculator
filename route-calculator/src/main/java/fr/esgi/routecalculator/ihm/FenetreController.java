@@ -31,7 +31,7 @@ public class FenetreController implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e){
-				//vue.scroller.setVisible(true);
+		//TODO
 		if(e.getSource().equals(vue.recherche)){
 
 			Calendar selectedCalendar = (Calendar) ((JDateComponent) vue.choixdate).getModel().getValue();
@@ -51,15 +51,22 @@ public class FenetreController implements ActionListener {
 			String minute = (String) vue.choix3.getSelectedItem();
 			String mode = vue.groupe.getSelectedCheckbox().getLabel();
 			String criteres = vue.groupe1.getSelectedCheckbox().getLabel();
-			//String modes = mode.getLabel();
-			
-			//recuperation de la date
 
-			Date now = new Date();
+			
+			/*
+			 * Faire la recherche du chemin
+			 */
+			model.findRoute(depart, arrive);
+			
+			
+			/*
+			 * TODO
+			 * Recherche en prenant en compte la date et l'heure
+			 */
 			
 			
 			
-			//conversion de la date au format voul
+
 			/*
 			 * import java.util.Date
 			 * Date now = new Date()
