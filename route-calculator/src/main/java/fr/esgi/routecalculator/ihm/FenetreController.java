@@ -38,8 +38,10 @@ public class FenetreController implements ActionListener {
 			Date date=(selectedCalendar==null?null:selectedCalendar.getTime());
 			
 			if(date.before(new Date())){
-				JOptionPane jop1 = new JOptionPane();
-				jop1.showMessageDialog(null, "Le choix de la date est erronnée", "Alerte", JOptionPane.INFORMATION_MESSAGE);
+				vue.erreur("Le choix de la date est erronnée");
+				
+				//JOptionPane jop1 = new JOptionPane();
+				//jop1.showMessageDialog(null, "Le choix de la date est erronnée", "Alerte", JOptionPane.INFORMATION_MESSAGE);
 			} else{
 
 			String arrive = vue.arrive.getText();
@@ -134,8 +136,6 @@ public class FenetreController implements ActionListener {
 		JOptionPane dialogue;
 		Object[] dev = {"Alexandre DUBOIS","Hugo POISSONNET","Idriss SANI","Mike FIARI"};
 		dialogue = new JOptionPane(dev,JOptionPane.OK_OPTION );
-		//setContentPane(dialogue);
-			//JOptionPane.showConfirmDialog(vue, "Voulez vous vraiment quitter?");
 		}
 
 		
