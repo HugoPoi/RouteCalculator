@@ -4,8 +4,12 @@ import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 import javax.swing.border.*;
+
+import com.mysql.jdbc.Connection;
 
 //import controller.FenetreController;
 
@@ -313,9 +317,35 @@ public class FenetreVue extends JFrame {
 	/*
 	 * Tester la validité des entrées
 	 */
-	public boolean entreeValide(){
-		// TODO
-		return rootPaneCheckingEnabled;
+	public boolean entreeValide(String val, String colonne, String table, Connection c){
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		boolean b = false;
+		
+		try{
+			ps = c.prepareStatement("select * from " + table + " where " + colonne + " = ?");
+			ps.setString(1,val);
+			rs = ps.executeQuery();
+			if(rs.next()){
+				b = true ;
+			}
+			else{
+				b = false;
+			}	
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+		finally{
+			try{
+				rs.close();
+				ps.close();
+			}
+			catch(Exception e){
+				e.printStackTrace();
+			}
+		}
+		return b;
 	}
 	
 	

@@ -14,6 +14,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+import com.mysql.jdbc.Connection;
+
 import fr.esgi.routecalculator.gtfscalculator.Graph;
 import fr.esgi.routecalculator.ihm.FenetreVue;
 import net.sourceforge.jdatepicker.JDateComponentFactory;
@@ -33,14 +35,11 @@ public class FenetreController implements ActionListener {
 	public void actionPerformed(ActionEvent e){
 		//TODO
 		if(e.getSource().equals(vue.recherche)){
-
+			/*
+			 * Les variables à  utiliser dans les recherches
+			 */
 			Calendar selectedCalendar = (Calendar) ((JDateComponent) vue.choixdate).getModel().getValue();
 			Date date=(selectedCalendar==null?null:selectedCalendar.getTime());
-			
-			if(date.before(new Date()) || date.equals(new Date())){
-				vue.erreur("Le choix de la date est erronnée");
-			} else{
-
 			String arrive = vue.arrive.getText();
 			String depart = vue.depart.getText();
 			String etat = (String) vue.choix1.getSelectedItem();
@@ -48,6 +47,45 @@ public class FenetreController implements ActionListener {
 			String minute = (String) vue.choix3.getSelectedItem();
 			String mode = vue.groupe.getSelectedCheckbox().getLabel();
 			String criteres = vue.groupe1.getSelectedCheckbox().getLabel();
+			Date now = new Date();
+			
+			String table = "gtfs_agencies",name ="Name"; 
+			// String requete = "select id FROM gtfs_agencies WHERE name=arrive"
+			//TODO
+			//entreeValide(String val, String colonne, String table, Connection c)
+			
+			/*
+			 * Name est la colonne comportant les noms des stations si je ne me trompe
+			 * TABLE est le nom de la table, ici gtfs_agencies si je ne me trompe
+			 * CN la connexion à la bdd
+			 * TODO
+			 */
+			if(entreeValide(depart,name,table,CN)){
+				if(entreeValide(arrive,name,table,CN)){
+					if(date.before(now) || date.equals(now)){
+						//TODO
+						//implémenté la methode de recherche
+					}
+					else{
+						vue.erreur("La date est erronnée");
+					}
+				}
+				else{
+					vue.erreur("L'arrivée est erronnée");
+				}
+			}
+			else{
+				vue.erreur("Le depart est erronnée");
+			}
+			
+			
+			if(date.before(new Date()) || date.equals(new Date())){
+				vue.erreur("Le choix de la date est erronnée");
+			} else{
+				/*
+				 * Recuperation des info entrées dans l'IHM
+				 */
+
 
 			
 			/*
@@ -61,9 +99,10 @@ public class FenetreController implements ActionListener {
 			 * Recherche en prenant en compte la date et l'heure
 			 */
 			
-			
-			
-
+			/*
+			 * requete de verification de la station
+			 */
+				
 			/*
 			 * import java.util.Date
 			 * Date now = new Date()
@@ -118,8 +157,8 @@ public class FenetreController implements ActionListener {
 			if(option == JOptionPane.OK_OPTION){
 //				vue.arrive.set
 //				System.exit(0);
-//				FenetreVue fenetre = new FenetreVue(null);
-//				fenetre.setVisible(true);
+				FenetreVue fenetre = new FenetreVue(null);
+				fenetre.setVisible(true);
 			}
 		}
 		
