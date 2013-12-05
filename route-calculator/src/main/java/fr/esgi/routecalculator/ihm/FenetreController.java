@@ -37,7 +37,7 @@ public class FenetreController implements ActionListener {
 			Calendar selectedCalendar = (Calendar) ((JDateComponent) vue.choixdate).getModel().getValue();
 			Date date=(selectedCalendar==null?null:selectedCalendar.getTime());
 			
-			if(date.before(new Date())){
+			if(date.before(new Date()) || date.equals(new Date())){
 				vue.erreur("Le choix de la date est erronnée");
 				
 				//JOptionPane jop1 = new JOptionPane();
