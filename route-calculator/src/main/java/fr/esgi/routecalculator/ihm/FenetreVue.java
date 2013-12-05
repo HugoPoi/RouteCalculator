@@ -322,6 +322,6 @@ public class FenetreVue extends JFrame {
 	 * Affichage erreur sur la validité des entrees
 	 */
 	public void erreur(String a){
-		JOptionPane.showMessageDialog(this,a,"L'entrée n'est pas valide ! Reessayez",JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(this,a,"Alerte",JOptionPane.ERROR_MESSAGE);
 	}
 }
