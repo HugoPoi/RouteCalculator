@@ -39,9 +39,6 @@ public class FenetreController implements ActionListener {
 			
 			if(date.before(new Date()) || date.equals(new Date())){
 				vue.erreur("Le choix de la date est erronnée");
-				
-				//JOptionPane jop1 = new JOptionPane();
-				//jop1.showMessageDialog(null, "Le choix de la date est erronnée", "Alerte", JOptionPane.INFORMATION_MESSAGE);
 			} else{
 
 			String arrive = vue.arrive.getText();
@@ -56,7 +53,7 @@ public class FenetreController implements ActionListener {
 			/*
 			 * Faire la recherche du chemin
 			 */
-			model.findRoute(depart, arrive);
+			//model.findRoute(depart, arrive);
 			
 			
 			/*
