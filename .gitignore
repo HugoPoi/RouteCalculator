@@ -1,2 +1,8 @@
 bin
 target
+
+route-calculator/src/test/ressources/hibernate.cfg.xml
+
+route-calculator/src/test/ressources/hibernate.cfg.xml
+
+route-calculator/src/main/java/fr/esgi/routecalculator/gtfscalculator/PathGtfsImpl.java
