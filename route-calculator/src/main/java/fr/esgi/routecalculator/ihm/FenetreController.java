@@ -180,8 +180,6 @@ public class FenetreController implements ActionListener {
 		Object[] dev = {"Alexandre DUBOIS","Hugo POISSONNET","Idriss SANI","Mike FIARI"};
 		dialogue = new JOptionPane(dev,JOptionPane.OK_OPTION );
 		}
-
-		
 		
 	}
 
