@@ -36,7 +36,7 @@ public class FenetreController implements ActionListener {
 		//TODO
 		if(e.getSource().equals(vue.recherche)){
 			/*
-			 * Les variables ˆ  utiliser dans les recherches
+			 * Les variables ï¿½  utiliser dans les recherches
 			 */
 			Calendar selectedCalendar = (Calendar) ((JDateComponent) vue.choixdate).getModel().getValue();
 			Date date=(selectedCalendar==null?null:selectedCalendar.getTime());
@@ -57,33 +57,33 @@ public class FenetreController implements ActionListener {
 			/*
 			 * Name est la colonne comportant les noms des stations si je ne me trompe
 			 * TABLE est le nom de la table, ici gtfs_agencies si je ne me trompe
-			 * CN la connexion ˆ la bdd
+			 * CN la connexion ï¿½ la bdd
 			 * TODO
 			 */
 			if(entreeValide(depart,name,table,CN)){
 				if(entreeValide(arrive,name,table,CN)){
 					if(date.before(now) || date.equals(now)){
 						//TODO
-						//implŽmentŽ la methode de recherche
+						//implï¿½mentï¿½ la methode de recherche
 					}
 					else{
-						vue.erreur("La date est erronnŽe");
+						vue.erreur("La date est erronnï¿½e");
 					}
 				}
 				else{
-					vue.erreur("L'arrivŽe est erronnŽe");
+					vue.erreur("L'arrivï¿½e est erronnï¿½e");
 				}
 			}
 			else{
-				vue.erreur("Le depart est erronnŽe");
+				vue.erreur("Le depart est erronnï¿½e");
 			}
 			
 			
 			if(date.before(new Date()) || date.equals(new Date())){
-				vue.erreur("Le choix de la date est erronnŽe");
+				vue.erreur("Le choix de la date est erronnï¿½e");
 			} else{
 				/*
-				 * Recuperation des info entrŽes dans l'IHM
+				 * Recuperation des info entrï¿½es dans l'IHM
 				 */
 
 
@@ -120,12 +120,12 @@ public class FenetreController implements ActionListener {
 			/* public void lancerRequete()
 			  try
 			  {
-			    Class.forName("com.mysql.jdbc.Driver" );                                               //Initialisation du pilote de base de donnŽes
-			    Connection con = DriverManager.getConnection("jdbc:mysql://database", "user", "pwd" ); //Connexion ˆ ta base de donnŽes
-			    Statement instruction = con.createStatement();                                         //CrŽation du statement
+			    Class.forName("com.mysql.jdbc.Driver" );                                               //Initialisation du pilote de base de donnï¿½es
+			    Connection con = DriverManager.getConnection("jdbc:mysql://database", "user", "pwd" ); //Connexion ï¿½ ta base de donnï¿½es
+			    Statement instruction = con.createStatement();                                         //Crï¿½ation du statement
 			 
 			    String maRequete = "select designation_produit, type_produit FROM produit WHERE ref_produit 5";                                                                 // Entre ta requete ici
-			    ResultSet resultat = instruction.executeQuery(maRequete);                              //ExŽcution de ta requete avec retour de resultat
+			    ResultSet resultat = instruction.executeQuery(maRequete);                              //Exï¿½cution de ta requete avec retour de resultat
 			    
 			    //on peut mettre toutes ces variables comme des String
 			    String premier ="";
@@ -176,9 +176,10 @@ public class FenetreController implements ActionListener {
 		}
 
 		else if (e.getSource().equals(vue.mntmDveloppeurs)){
-		JOptionPane dialogue;
-		Object[] dev = {"Alexandre DUBOIS","Hugo POISSONNET","Idriss SANI","Mike FIARI"};
-		dialogue = new JOptionPane(dev,JOptionPane.OK_OPTION );
+			JTextArea sortie = new JTextArea(5,20);
+			String texte ="Architecture : Alexandre Dubois & Hugo POISSONNET\nIHM          : Idriss SANI\nInterfaÃ§age : Mike Fiari\t";
+			sortie.setText(texte);
+			JOptionPane.showMessageDialog(null, sortie, "Liste des DÃ©veloppeurs", JOptionPane.PLAIN_MESSAGE);
 		}
 		
 	}
