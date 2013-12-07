@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,8 +44,12 @@ public class PathGtfsImpl implements IPathGtfs {
 	int totaltime;
 
 	static GtfsMutableRelationalDao dao;
+	
+	static HashSet<Stop> visitedStations = new HashSet<Stop>();
+	static List<ServiceId> servicesAvailables;
 
 	// constructeur d'initialisation de calcul (appelé une seul fois)
+	@SuppressWarnings("unchecked")
 	public PathGtfsImpl(String parentStopIdDeparture,
 			String parentStopIdArrival, GregorianCalendar departureTimeIn) {
 		super();
@@ -59,6 +64,11 @@ public class PathGtfsImpl implements IPathGtfs {
 				+ calendar.get(Calendar.MINUTE) * 60
 				+ calendar.get(Calendar.SECOND);
 		System.out.println("Heure de départ en seconde : " + departureTimeInSeconds);
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
+		servicesAvailables = session.createQuery("select service.serviceId from ServiceCalendar as service where service.startDate <= :date AND service.endDate >= :date" +
+				" AND service.serviceId NOT IN (select exception.serviceId from ServiceCalendarDate AS exception WHERE exception.date = :date)")
+				.setString("date", new ServiceDate(departureTime).getAsString()).list();
 	}
 
 	// constructeur d'incrémentation de chemin
@@ -67,7 +77,7 @@ public class PathGtfsImpl implements IPathGtfs {
 		this.currentStopTime = takenStopTime;
 		this.currentStop = takenStopTime.getStop();
 		this.parentStopIdDeparture = currentStop.getParentStation();
-		
+		PathGtfsImpl.visitedStations.add(currentStop);
 		if(last.currentStopTime != null){
 			this.totaltime = (currentStopTime.getArrivalTime() - last.currentStopTime.getArrivalTime()) + last.totaltime;
 		}else{
@@ -130,9 +140,7 @@ public class PathGtfsImpl implements IPathGtfs {
 							"from Stop as stop where stop.parentStation = ?")
 					.setString(0, parentStopIdDeparture).list();
 			
-			List<ServiceId> servicesAvailables = session.createQuery("select service.serviceId from ServiceCalendar as service where service.startDate <= :date AND service.endDate >= :date" +
-						" AND service.serviceId NOT IN (select exception.serviceId from ServiceCalendarDate AS exception WHERE exception.date = :date)")
-						.setString("date", new ServiceDate(departureTime).getAsString()).list();
+
 
 			for (Object possibleLines : stops) {
 				
@@ -153,9 +161,12 @@ public class PathGtfsImpl implements IPathGtfs {
 						.setParameterList("servicesavailable", servicesAvailables)
 						.setEntity("route", possibleRoute).setMaxResults(1).uniqueResult();
 					if(last != null){
-					StopTime getNextStopTime = (StopTime) session.createQuery("from StopTime as stoptime where stoptime.trip = :trip AND stoptime.stopSequence = :position AND stoptime.stop.parentStation != :laststop")
+					StopTime getNextStopTime = (StopTime) session.createQuery("from StopTime as stoptime where stoptime.trip = :trip" +
+							" AND stoptime.stopSequence = :position AND stoptime.stop.parentStation != :laststop" +
+							" AND stoptime.stop NOT IN (:visitedstations) ")
 							.setEntity("trip", startStopTime.getTrip())
 							.setString("laststop", last.parentStopIdDeparture)
+							.setParameterList("visitedstations", visitedStations)
 							.setInteger("position", startStopTime.getStopSequence()+1).uniqueResult();
 					if(getNextStopTime != null) possibilities.add(getNextStopTime);
 					}else{
