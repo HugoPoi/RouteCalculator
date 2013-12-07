@@ -1,5 +1,6 @@
 package fr.esgi.routecalculator.gtfscalculator;
 
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.PriorityQueue;
 
@@ -19,20 +20,23 @@ public class Graph {
 		routes.add(new PathGtfsImpl(start, target, new GregorianCalendar()));
 		
 		PathGtfsImpl selectedRoute = null;
+		Date startTime = new Date();
 		do{
 			selectedRoute = routes.remove();
 			for (StopTime possibility: selectedRoute.getPossibleConnectionsStopId()) {
-				try {
 					PathGtfsImpl newRoute = new PathGtfsImpl(selectedRoute, possibility);
 					routes.add(newRoute);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+			}
+			
+			if(new Date().getTime() - startTime.getTime() > 5000){
+				System.out.println("Queued routes : " +routes.size());
+				System.out.println("Best Time : " +routes.peek().getTotalTime());
+				System.out.println("Where : " +routes.peek().getCurrentStop().getName());
+				startTime = new Date();
 			}
 			
 		}while(!selectedRoute.isCompleted());
-		
+		System.out.println("Total time for best : "+selectedRoute.getTotalTime());
 		System.out.println(selectedRoute);
 	}
 

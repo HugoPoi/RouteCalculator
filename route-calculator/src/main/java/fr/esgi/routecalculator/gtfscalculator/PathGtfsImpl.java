@@ -12,11 +12,16 @@ import java.util.Stack;
 import org.hibernate.SessionFactory;
 import org.hibernate.classic.Session;
 import org.onebusaway.gtfs.model.Route;
+import org.onebusaway.gtfs.model.ServiceCalendar;
+import org.onebusaway.gtfs.model.ServiceCalendarDate;
 import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.StopTime;
 import org.onebusaway.gtfs.model.Trip;
+import org.onebusaway.gtfs.model.calendar.ServiceDate;
 import org.onebusaway.gtfs.services.GtfsMutableRelationalDao;
 import org.onebusaway.gtfs.services.HibernateGtfsFactory;
+
+import sun.security.jca.ServiceId;
 
 import fr.esgi.routecalculator.interfaces.INode;
 import fr.esgi.routecalculator.interfaces.gtfs.IPathGtfs;
@@ -57,26 +62,16 @@ public class PathGtfsImpl implements IPathGtfs {
 	}
 
 	// constructeur d'incrémentation de chemin
-	public PathGtfsImpl(PathGtfsImpl inLast, StopTime takenStopTime) throws Exception {
+	public PathGtfsImpl(PathGtfsImpl inLast, StopTime takenStopTime){
 		this.last = inLast;
 		this.currentStopTime = takenStopTime;
-		//Take the StopTime and Forward +1
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		this.currentStop = takenStopTime.getStop();
+		this.parentStopIdDeparture = currentStop.getParentStation();
 		
-		StopTime getNextStopTime = (StopTime) session.createQuery("from StopTime as stoptime where stoptime.trip = :trip AND stoptime.stopSequence = :position")
-			.setEntity("trip", takenStopTime.getTrip())
-			.setInteger("position", takenStopTime.getStopSequence()+1).uniqueResult();
-		
-		if(getNextStopTime == null){
-			throw new Exception("Train arrivé au terminus");
+		if(last.currentStopTime != null){
+			this.totaltime = (currentStopTime.getArrivalTime() - last.currentStopTime.getArrivalTime()) + last.totaltime;
 		}else{
-			int triptime = getNextStopTime.getArrivalTime() - takenStopTime.getDepartureTime();
-			if(last.last == null){
-				triptime += takenStopTime.getDepartureTime() - departureTimeInSeconds;
-			}
-			this.totaltime = last.totaltime + triptime;
-			this.currentStop = getNextStopTime.getStop();
-			this.parentStopIdDeparture = this.currentStop.getParentStation();
+			this.totaltime = (currentStopTime.getArrivalTime() - departureTimeInSeconds);
 		}
 		
 	}
@@ -101,10 +96,10 @@ public class PathGtfsImpl implements IPathGtfs {
 	}
 
 	public int compareTo(IPathGtfs o) {
-		if(this.totaltime < o.getTotalTime()){
+		if(this.totaltime > o.getTotalTime()){
 			return 1;
 		}
-		if(this.totaltime > o.getTotalTime()){
+		if(this.totaltime < o.getTotalTime()){
 			return -1;
 		}
 		return 0;
@@ -134,19 +129,41 @@ public class PathGtfsImpl implements IPathGtfs {
 					.createQuery(
 							"from Stop as stop where stop.parentStation = ?")
 					.setString(0, parentStopIdDeparture).list();
+			
+			List<ServiceId> servicesAvailables = session.createQuery("select service.serviceId from ServiceCalendar as service where service.startDate <= :date AND service.endDate >= :date" +
+						" AND service.serviceId NOT IN (select exception.serviceId from ServiceCalendarDate AS exception WHERE exception.date = :date)")
+						.setString("date", new ServiceDate(departureTime).getAsString()).list();
 
 			for (Object possibleLines : stops) {
 				
 				List<Route> routesList= session.createQuery(
-						"select stoptime.trip.route from StopTime as stoptime where stoptime.stop = :stop AND stoptime.departureTime >= :currenttime group by stoptime.trip.route")
+						"select stoptime.trip.route from StopTime as stoptime where stoptime.stop = :stop AND stoptime.departureTime >= :currenttime" +
+						" AND stoptime.trip.serviceId IN (:servicesavailable)" +
+						" group by stoptime.trip.route")
 						.setEntity("stop", possibleLines)
-						.setInteger("currenttime", currentRealTimeInSeconds).list();
+						.setParameterList("servicesavailable", servicesAvailables)
+						.setInteger("currenttime", currentRealTimeInSeconds).list();	
 				
 				for (Object possibleRoute : routesList) {
-					possibilities.add((StopTime) session.createQuery("from StopTime as stoptime where stoptime.stop = :stop AND stoptime.departureTime >= :currenttime AND stoptime.trip.route = :route order by stoptime.departureTime")
+					StopTime startStopTime = (StopTime) session.createQuery("from StopTime as stoptime where stoptime.stop = :stop AND stoptime.departureTime >= :currenttime AND stoptime.trip.route = :route" +
+							" AND stoptime.trip.serviceId IN (:servicesavailable)" +
+							" order by stoptime.departureTime")
 						.setEntity("stop", possibleLines)
 						.setInteger("currenttime", currentRealTimeInSeconds)
-						.setEntity("route", possibleRoute).setMaxResults(1).uniqueResult());
+						.setParameterList("servicesavailable", servicesAvailables)
+						.setEntity("route", possibleRoute).setMaxResults(1).uniqueResult();
+					if(last != null){
+					StopTime getNextStopTime = (StopTime) session.createQuery("from StopTime as stoptime where stoptime.trip = :trip AND stoptime.stopSequence = :position AND stoptime.stop.parentStation != :laststop")
+							.setEntity("trip", startStopTime.getTrip())
+							.setString("laststop", last.parentStopIdDeparture)
+							.setInteger("position", startStopTime.getStopSequence()+1).uniqueResult();
+					if(getNextStopTime != null) possibilities.add(getNextStopTime);
+					}else{
+						StopTime getNextStopTime = (StopTime) session.createQuery("from StopTime as stoptime where stoptime.trip = :trip AND stoptime.stopSequence = :position")
+								.setEntity("trip", startStopTime.getTrip())
+								.setInteger("position", startStopTime.getStopSequence()+1).uniqueResult();
+						if(getNextStopTime != null) possibilities.add(getNextStopTime);
+					}
 				}
 			}
 
@@ -172,8 +189,9 @@ public class PathGtfsImpl implements IPathGtfs {
 	public String toString() {
 		StringBuffer out = new StringBuffer();
 		PathGtfsImpl enext = this;
+		
 		do{
-			if(enext.currentStopTime != null) out.append(enext.currentStopTime.getStop().getName() + enext.currentStopTime.getTrip().getId() + "\n");
+			if(enext.currentStopTime != null) out.append(enext.currentStopTime.getStop().getName() + enext.currentStopTime.getTrip() + "\n");
 			enext = enext.last;
 		}
 		while(enext != null);
