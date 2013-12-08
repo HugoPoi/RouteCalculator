@@ -25,14 +25,17 @@ import javax.swing.table.TableCellRenderer;
 public class VueResultat extends JPanel {
     
     public VueResultat (PathGtfsImpl selectedRoute) {
+        String departureTime = this.toTime(selectedRoute.getDepartureTime());
+        String totalTime = this.toTime(selectedRoute.getTotalTime());
+        String dureeTime = this.toTime(selectedRoute.getTotalTime() - selectedRoute.getDepartureTime());
         Box contener = Box.createVerticalBox();
-        contener.add(new JLabel("Le plus rapide : 45 min"));
+        contener.add(new JLabel("Le plus rapide : "+dureeTime));
         JPanel panelInfo = new JPanel(new GridLayout(1, 4));
         panelInfo.setPreferredSize(new Dimension(600, 100));
-        panelInfo.add(new JLabel("Départ : 9h03"));
-        panelInfo.add(new JLabel("Durée total : 45min"));
+        panelInfo.add(new JLabel("Départ : "+departureTime));
+        panelInfo.add(new JLabel("Durée total : "+dureeTime));
         panelInfo.add(new JLabel("Zones : 1-2"));
-        panelInfo.add(new JLabel("Arrivée : 9h48"));
+        panelInfo.add(new JLabel("Arrivée : "+totalTime));
         contener.add(panelInfo);
         Image image = new Image();
         Box cheminGraphique = Box.createHorizontalBox();
@@ -92,6 +95,17 @@ public class VueResultat extends JPanel {
         panelResultat.add(scrollPane);
         contener.add(panelResultat);
         this.add(contener);
+    }
+    
+    private String toTime (int time) {
+        String stringTime;
+        int min = time /60;
+        if (min >= 60) {
+            stringTime = (min/60) +"h " + (min %60) +" min";
+        } else {
+            stringTime = min +" min";
+        }
+        return stringTime;
     }
     
     public class MyTableModel extends AbstractTableModel {

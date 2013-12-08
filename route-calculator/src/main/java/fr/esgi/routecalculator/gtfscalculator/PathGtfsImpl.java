@@ -125,6 +125,10 @@ public class PathGtfsImpl implements IPathGtfs {
 		return totaltime;
 	}
 
+	public int getDepartureTime() {
+		return departureTimeInSeconds;
+	}
+
 	@SuppressWarnings({ "null", "unchecked" })
 	@Override
 	public List<StopTime> getPossibleConnectionsStopId() {
