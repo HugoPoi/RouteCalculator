@@ -11,10 +11,10 @@ import fr.esgi.routecalculator.interfaces.gtfs.IPathGtfs;
 
 public class Graph {
 	
-	Graph (){}
+	public Graph (){}
 
 
-	public void findRoute(String start, String target){
+	public PathGtfsImpl findRoute(String start, String target){
 		
 		PriorityQueue<PathGtfsImpl> routes = new PriorityQueue<>();
 		routes.add(new PathGtfsImpl(start, target, new GregorianCalendar()));
@@ -38,6 +38,7 @@ public class Graph {
 		}while(!selectedRoute.isCompleted());
 		System.out.println("Total time for best : "+selectedRoute.getTotalTime());
 		System.out.println(selectedRoute);
+                return selectedRoute;
 	}
 
 
