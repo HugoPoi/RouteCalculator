@@ -48,7 +48,12 @@ public class PathGtfsImpl implements IPathGtfs {
 	static HashSet<Stop> visitedStations = new HashSet<Stop>();
 	static List<ServiceId> servicesAvailables;
 
-	// constructeur d'initialisation de calcul (appelé une seul fois)
+	/** constructeur d'initialisation de calcul (appelé une seul fois)
+	 * 
+	 * @param parentStopIdDeparture
+	 * @param parentStopIdArrival
+	 * @param departureTimeIn
+	 */
 	@SuppressWarnings("unchecked")
 	public PathGtfsImpl(String parentStopIdDeparture,
 			String parentStopIdArrival, GregorianCalendar departureTimeIn) {
