@@ -47,12 +47,17 @@ public class PathGtfsImpl implements IPathGtfs {
 	
 	static HashSet<Stop> visitedStations = new HashSet<Stop>();
 	static List<ServiceId> servicesAvailables;
+        
+        private String departStation;
+        private String endStation;
 
 	// constructeur d'initialisation de calcul (appelé une seul fois)
 	@SuppressWarnings("unchecked")
 	public PathGtfsImpl(String parentStopIdDeparture,
 			String parentStopIdArrival, GregorianCalendar departureTimeIn) {
 		super();
+                this.departStation = parentStopIdDeparture;
+                this.endStation = parentStopIdArrival;
 		departureTime = departureTimeIn;
 		PathGtfsImpl.dao = new HibernateGtfsFactory(HibernateUtil.getSessionFactory()).getDao();
 		PathGtfsImpl.parentStopIdArrival = getParentStopIdForNameStop(parentStopIdArrival);
@@ -78,6 +83,8 @@ public class PathGtfsImpl implements IPathGtfs {
 		this.currentStop = takenStopTime.getStop();
 		this.parentStopIdDeparture = currentStop.getParentStation();
 		PathGtfsImpl.visitedStations.add(currentStop);
+                this.departStation = inLast.departStation;
+                this.endStation = inLast.endStation;
 		if(last.currentStopTime != null){
 			this.totaltime = (currentStopTime.getArrivalTime() - last.currentStopTime.getArrivalTime()) + last.totaltime;
 		}else{
@@ -199,10 +206,36 @@ public class PathGtfsImpl implements IPathGtfs {
 	public Boolean isCompleted() {
 		return (parentStopIdDeparture.equals(parentStopIdArrival));
 	}
+        
+        public String getDepartStation () {
+            return departStation;
+        }
+        
+        public String getEndStation () {
+            return endStation;
+        }
+        
+        public List<StopTime> getTrips () {
+            ArrayList<StopTime> stopTimes = new ArrayList<>();
+            PathGtfsImpl enext = this;
+            String previousId = "";
+            do{
+                if (enext.currentStopTime != null) {
+                    String id = enext.currentStopTime.getTrip().getId().getId();
+                    if (!id.equals(previousId)) {
+                        previousId = id;
+                        stopTimes.add(0,enext.currentStopTime);
+                    }
+                }
+                enext = enext.last;
+            } while(enext != null);
+            return stopTimes;
+        }
 	
 	@Override
 	public String toString() {
-		StringBuffer out = new StringBuffer();
+            //this.getTransportUtilise(this.getTripsId());
+		StringBuilder out = new StringBuilder();
 		PathGtfsImpl enext = this;
 		
 		do{
