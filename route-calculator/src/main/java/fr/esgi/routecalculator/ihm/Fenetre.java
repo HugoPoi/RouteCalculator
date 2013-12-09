@@ -27,6 +27,8 @@ public class Fenetre extends JFrame {
     private JMenu mnFichier, mnEdition, mnPropos;
     private JMenuItem mntmNouvelleRecherche, mntmDveloppeurs;
     private JMenuItem mntmQuitter, mntmCopier, mntmColler, mntmSupprimer, mntmVersion, mntmToutSlctionner;
+    
+    private VueRecherche vue;
 
     public Fenetre() {
         this("fenetre");
@@ -34,12 +36,17 @@ public class Fenetre extends JFrame {
 
     public Fenetre(String title) {
         this.setTitle(title);
-        this.setSize(1000, 600);
+        this.setSize(900, 600);
         this.setLocationRelativeTo(null);
         this.setResizable(false);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setVisible(true);
         this.initMenu();
+    }
+
+    public void ajouterVueRecherche(VueRecherche vue) {
+        this.vue = vue;
+        this.ajouterPanel(vue);
     }
 
     public void ajouterPanel(Container panel) {
@@ -86,6 +93,7 @@ public class Fenetre extends JFrame {
         public void actionPerformed(ActionEvent e) {
             int option = JOptionPane.showConfirmDialog(null, "Voulez-vous effectuer une nouvelle recherche ?", "Nouvelle recherche", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
             if (option == JOptionPane.OK_OPTION) {
+                Fenetre.this.ajouterPanel(Fenetre.this.vue);
                 /*RechercheController controller = new RechercheController(Fenetre.this);
                 Fenetre.this.ajouterPanel(new VueRecherche(controller));
                 controller.init();*/

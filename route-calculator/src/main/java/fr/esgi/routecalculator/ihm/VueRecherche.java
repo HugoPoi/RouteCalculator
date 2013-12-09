@@ -45,7 +45,7 @@ public class VueRecherche extends JPanel {
     //declaration des variables
     public JMenuItem mntmNouvelleRecherche, mntmDveloppeurs;
     public JMenuItem mntmQuitter, mntmCopier, mntmColler, mntmSupprimer, mntmVersion, mntmToutSlctionner;
-    private JLabel Depart, Arrive;
+    private JLabel Depart, Arrive, info;
     public JTextField depart, arrive;
     public JPanel panel1, panel2, panel3, partie, choixdate;
     public JComboBox<String> choix1, choix2, choix3;
@@ -54,40 +54,53 @@ public class VueRecherche extends JPanel {
     private Border border1, border2, border3;
     public JTable resultat;
     public JScrollPane scroller;
-    
-    public synchronized void attendre () {
+
+    public synchronized void attendre() {
         try {
             this.wait(0);
         } catch (InterruptedException ex) {
             Logger.getLogger(VueRecherche.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    public synchronized void reprendre () {
+
+    public synchronized void reprendre() {
         this.notify();
     }
 
     public VueRecherche(RechercheController controller) {
         super(new GridBagLayout());
-        
+
         this.controller = controller;
         this.controller.ajouterEcouteur(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 switch (evt.getPropertyName()) {
+                    case "calculeEnCours":
+                        afficheInfo();
+                        break;
+                    case "calculeTerminer":
+                        calculeTerminer();
+                        break;
+                    case "routeInvalide":
+                        afficheInfo();
+                        break;
                     case "init":
                         init();
                         break;
-                    case "debutJeu":
+                    default:
+                        switch (evt.getPropertyName()) {
+                            case "lancerRecherche":
+                                break;
+                        }
+                        attendre();
                         break;
                 }
-                attendre();
             }
         });
 
     }
-    
-    private void init () {
+
+    private void init() {
         //label depart
         Depart = new JLabel("Départ");
         GridBagConstraints g_Depart = new GridBagConstraints();
@@ -129,7 +142,6 @@ public class VueRecherche extends JPanel {
         arrive.setColumns(10);
 
         //implentation heure
-        //panel1 = new JPanel(new GridLayout(0,1));
         JPanel panelx = new JPanel();
         JPanel panelx1 = new JPanel();
         panel1 = new JPanel(new GridLayout(2, 1));
@@ -166,13 +178,11 @@ public class VueRecherche extends JPanel {
 
         //implementation date
         choixdate = (JPanel) JDateComponentFactory.createJDatePicker();
-        //choixdate = new JDateChooser();
         GridBagConstraints g_choixdate = new GridBagConstraints();
         g_choixdate.anchor = GridBagConstraints.WEST;
         g_choixdate.insets = new Insets(0, 0, 5, 5);
         g_choixdate.gridx = 6;
         g_choixdate.gridy = 3;
-//		g_choixdate.gridwidth = 1;
         this.add(choixdate, g_choixdate);
 
         //les modes
@@ -212,14 +222,12 @@ public class VueRecherche extends JPanel {
         g_panel3.fill = GridBagConstraints.HORIZONTAL;
         g_panel3.gridx = 6;
         g_panel3.gridy = 4;
-        g_panel3.insets = new Insets(5, 0, 0, 0);
         this.add(panel3, g_panel3);
 
         // bouton recherche
         recherche = new JButton("Rechercher");
         recherche.setForeground(Color.BLUE);
         recherche.addActionListener(new BoutonRecherche());
-        //	recherche.addMouseListener(controller);
         GridBagConstraints g_recherche = new GridBagConstraints();
         g_recherche.anchor = GridBagConstraints.CENTER;
         g_recherche.insets = new Insets(0, 20, 0, 0);
@@ -227,16 +235,37 @@ public class VueRecherche extends JPanel {
         g_recherche.gridy = 5;
         this.add(recherche, g_recherche);
 
+        this.info = new JLabel();
+        GridBagConstraints g_info = new GridBagConstraints();
+        g_info.anchor = GridBagConstraints.CENTER;
+        g_info.insets = new Insets(0, 20, 0, 0);
+        g_info.gridx = 3;
+        g_info.gridy = 7;
+        this.add(this.info, g_info);
+
         //######################################################
         //########### Disposition ##############################
         //######################################################
         this.repaint();
         this.validate();
     }
-    
+
+    private void afficheInfo() {
+        this.info.setText("calcule en cours, veuillez patientez...");
+        this.repaint();
+        this.validate();
+    }
+
+    private void calculeTerminer() {
+        this.info.setText("");
+        this.repaint();
+        this.validate();
+    }
+
     private class BoutonRecherche implements ActionListener {
+
         @Override
-        public void actionPerformed (ActionEvent event) {
+        public void actionPerformed(ActionEvent event) {
             int choixTrajet = 1;
             String name = groupe.getSelectedCheckbox().getLabel();
             switch (name) {

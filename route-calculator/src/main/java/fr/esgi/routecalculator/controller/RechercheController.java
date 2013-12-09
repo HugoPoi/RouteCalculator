@@ -29,11 +29,14 @@ public class RechercheController {
     
     public void init () {
         this.pcsControlleurVue.firePropertyChange("init", null, null);
-        while (!this.routeValide()) {
-            this.pcsControlleurVue.firePropertyChange("routeInvalide", null, null);
-        }
-        this.findRoute();
-        this.pcsControlleurVue.firePropertyChange("calculeEnCours", null, null);
+        do {
+            this.pcsControlleurVue.firePropertyChange("lancerRecherche", null, null);
+            while (!this.routeValide()) {
+                this.pcsControlleurVue.firePropertyChange("routeInvalide", null, null);
+            }
+            this.pcsControlleurVue.firePropertyChange("calculeEnCours", null, null);
+            this.findRoute();
+        } while (true);
     }
     
     public void setRoute (String depart, String arrive, int choixMode) {
@@ -52,6 +55,7 @@ public class RechercheController {
         System.out.println("arrive : " + this.arrive);
         System.out.println("mode : " + this.choixMode);
 	PathGtfsImpl selectedRoute = premierGraph.findRoute(this.depart, this.arrive);
+        this.pcsControlleurVue.firePropertyChange("calculeTerminer", null, null);
         this.fenetre.ajouterPanel(new VueResultat(selectedRoute));
     }
     

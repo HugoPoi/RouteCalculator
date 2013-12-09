@@ -17,7 +17,7 @@ public class Main {
     public static void main(String[] arg) {
         Fenetre fenetre = new Fenetre("RATP");
         RechercheController controller = new RechercheController(fenetre);
-        fenetre.ajouterPanel(new VueRecherche(controller));
+        fenetre.ajouterVueRecherche(new VueRecherche(controller));
         controller.init();
     }
 }

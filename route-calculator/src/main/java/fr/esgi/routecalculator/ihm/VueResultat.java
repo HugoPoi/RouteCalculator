@@ -10,6 +10,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.util.List;
 import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -17,6 +18,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
+import org.onebusaway.gtfs.model.StopTime;
 
 /**
  *
@@ -26,8 +28,8 @@ public class VueResultat extends JPanel {
     
     public VueResultat (PathGtfsImpl selectedRoute) {
         String departureTime = this.toTime(selectedRoute.getDepartureTime());
-        String totalTime = this.toTime(selectedRoute.getTotalTime());
-        String dureeTime = this.toTime(selectedRoute.getTotalTime() - selectedRoute.getDepartureTime());
+        String totalTime = this.toTime(selectedRoute.getDepartureTime() + selectedRoute.getTotalTime());
+        String dureeTime = this.toTime(selectedRoute.getTotalTime());
         Box contener = Box.createVerticalBox();
         contener.add(new JLabel("Le plus rapide : "+dureeTime));
         JPanel panelInfo = new JPanel(new GridLayout(1, 4));
@@ -39,44 +41,50 @@ public class VueResultat extends JPanel {
         contener.add(panelInfo);
         Image image = new Image();
         Box cheminGraphique = Box.createHorizontalBox();
-        //cheminGraphique.add(new PanelImage(image.getImage("ico_flag_depart")));
-        //cheminGraphique.add(new PanelImage(image.getImage("pieton")));
+        
+        cheminGraphique.add(new JLabel("départ"));
         cheminGraphique.add(new Panneau(70, 20,8));
-        //cheminGraphique.add(new PanelImage(image.getImage("metro")));
-        //cheminGraphique.add(new PanelImage(image.getImage("5")));
-        cheminGraphique.add(new Panneau(70, 20));
-        //cheminGraphique.add(new PanelImage(image.getImage("metro")));
-        //cheminGraphique.add(new PanelImage(image.getImage("2")));
-        cheminGraphique.add(new Panneau(70, 20));
-        //cheminGraphique.add(new PanelImage(image.getImage("metro")));
-        //cheminGraphique.add(new PanelImage(image.getImage("12")));
-        cheminGraphique.add(new Panneau(70, 20));
-        //cheminGraphique.add(new PanelImage(image.getImage("pieton-cercle")));
+        List<StopTime> stopTimes = selectedRoute.getTrips();
+        for (int i = 0 ; i < stopTimes.size() ; i++) {
+            int routeType = stopTimes.get(i).getTrip().getRoute().getType();
+            switch (routeType) {
+                case 1:
+                    cheminGraphique.add(new JLabel("metro"));
+                    break;
+            }
+            cheminGraphique.add(new JLabel(stopTimes.get(i).getTrip().getRoute().getShortName()));
+            if (i+1 < stopTimes.size()) {
+                cheminGraphique.add(new Panneau(70, 20));
+            }
+        }
         cheminGraphique.add(new Panneau(70, 20,8));
-        //cheminGraphique.add(new PanelImage(image.getImage("ico_flag_arrivee")));
+        cheminGraphique.add(new JLabel("arrivé"));
         contener.add(cheminGraphique);
         
-        String[] ligne1 = {};
-        String[] ligne2 = {"depuis Bobigny-Pablo-Picasso", "direction Place d'Italie", "jusqu’à Stalingrad"};
+        String[] ligne2 = {"depuis " + selectedRoute.getDepartStation(), "direction ", "jusqu’à " + stopTimes.get(0).getStop().getName()};
         
-        /*Object[][] donnees = {
-                {new PanelImage(image.getImage("ico_flag_depart")), new PanelDeTexte("aller jusqu’à Bobigny-Pablo-Picasso – Métro"), "9h03", "3 min"},
-                {new PanelImage(image.getImage("5")), new PanelDeTexte(ligne2), "9h20", "14 min"},
-                {null, new PanelDeTexte("correspondance"), null, "2 min"},
-                {new PanelImage(image.getImage("2")), null, "9h30", "5 min"},
-                {null, new PanelDeTexte("correspondance"), null, "2 min"},
-                {new PanelImage(image.getImage("12")), null, "9h45", "12 min"},
-                {new PanelImage(image.getImage("ico_flag_arrivee")), new PanelDeTexte(" aller jusqu’à Rue Du Bac (METRO), Paris"), null, "3 min"},
-        };*/
-        Object[][] donnees = {
-                {null, new PanelDeTexte("aller jusqu’à Bobigny-Pablo-Picasso – Métro"), "9h03", "3 min"},
-                {null, new PanelDeTexte(ligne2), "9h20", "14 min"},
-                {null, new PanelDeTexte("correspondance"), null, "2 min"},
-                {null, null, "9h30", "5 min"},
-                {null, new PanelDeTexte("correspondance"), null, "2 min"},
-                {null, null, "9h45", "12 min"},
-                {null, new PanelDeTexte(" aller jusqu’à Rue Du Bac (METRO), Paris"), null, "3 min"},
-        };
+        Object[][] donnees = new Object[stopTimes.size()*2][4];
+        donnees[0][0] = null;
+        donnees[0][1] = new PanelDeTexte("aller jusqu’à " + selectedRoute.getDepartStation());
+        donnees[0][2] = departureTime;
+        donnees[0][3] = "0 min";
+        
+        donnees[1][0] = "metro"+stopTimes.get(0).getTrip().getRoute().getShortName();
+        donnees[1][1] = new PanelDeTexte(ligne2);
+        donnees[1][2] = this.toTime(stopTimes.get(0).getArrivalTime());
+        donnees[1][3] = this.toTime(stopTimes.get(0).getArrivalTime() - selectedRoute.getDepartureTime());
+        
+        for (int i = 1 ; i < stopTimes.size() ; i++) {
+            donnees[i*2][0] = null;
+            donnees[i*2][1] = new PanelDeTexte("correspondance");
+            donnees[i*2][2] = null;
+            donnees[i*2][3] = "0 min";
+            
+            donnees[(i*2)+1][0] = "metro"+stopTimes.get(i).getTrip().getRoute().getShortName();
+            donnees[(i*2)+1][1] = new PanelDeTexte(ligne2);
+            donnees[(i*2)+1][2] = this.toTime(stopTimes.get(i).getArrivalTime());
+            donnees[(i*2)+1][3] = this.toTime(stopTimes.get(i).getArrivalTime() - selectedRoute.getDepartureTime());
+        }
         String[] entetes = {"", "", "Horraire", "Durée"};
  
         
@@ -85,13 +93,13 @@ public class VueResultat extends JPanel {
         chemin.setRowHeight(60);
         chemin.getColumnModel().getColumn(0).setPreferredWidth(70);
         chemin.getColumnModel().getColumn(1).setPreferredWidth(300);
-        chemin.getColumnModel().getColumn(2).setPreferredWidth(70);
+        chemin.getColumnModel().getColumn(2).setPreferredWidth(100);
         chemin.getColumnModel().getColumn(3).setPreferredWidth(70);
         chemin.setDefaultRenderer(PanelImage.class, new PolicyTableComponent());
         chemin.setDefaultRenderer(PanelDeTexte.class, new PolicyTableComponent());
         JScrollPane scrollPane = new JScrollPane(chemin);
         JPanel panelResultat = new JPanel();
-        panelResultat.setPreferredSize(new Dimension(900, 350));
+        panelResultat.setPreferredSize(new Dimension(700, 350));
         panelResultat.add(scrollPane);
         contener.add(panelResultat);
         this.add(contener);
@@ -122,7 +130,7 @@ public class VueResultat extends JPanel {
         public Class getColumnClass(int columnIndex) {
             switch (columnIndex) {
                 case 0 :
-                    return PanelImage.class;
+                    return Object.class;
                 case 1 :
                     return PanelDeTexte.class;
                 case 2 :
@@ -153,7 +161,7 @@ public class VueResultat extends JPanel {
         
         @Override
         public int getRowCount() { 
-            return 8;
+            return donnees.length;
         }
         
         @Override
