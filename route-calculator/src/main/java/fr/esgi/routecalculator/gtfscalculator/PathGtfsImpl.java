@@ -81,7 +81,11 @@ public class PathGtfsImpl implements IPathGtfs {
 				.setString("date", new ServiceDate(departureTime).getAsString()).list();
 	}
 
-	// constructeur d'incrémentation de chemin
+	/**
+	 *  constructeur d'incrémentation de chemin
+	 * @param inLast
+	 * @param takenStopTime
+	 */
 	public PathGtfsImpl(PathGtfsImpl inLast, StopTime takenStopTime){
 		this.last = inLast;
 		this.currentStopTime = takenStopTime;
@@ -90,7 +94,7 @@ public class PathGtfsImpl implements IPathGtfs {
 		PathGtfsImpl.visitedStations.add(currentStop);
                 this.departStation = inLast.departStation;
                 this.endStation = inLast.endStation;
-		if(last.currentStopTime != null){
+		if(last.currentStopTime != null){	
 			this.totaltime = (currentStopTime.getArrivalTime() - last.currentStopTime.getArrivalTime()) + last.totaltime;
 		}else{
 			this.totaltime = (currentStopTime.getArrivalTime() - departureTimeInSeconds);

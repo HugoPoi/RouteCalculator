@@ -79,9 +79,10 @@ public class VueResultat extends JPanel {
             donnees[i*2][1] = new PanelDeTexte("correspondance");
             donnees[i*2][2] = null;
             donnees[i*2][3] = "0 min";
+            String[] lignex = {"depuis " + stopTimes.get(i-1).getStop().getName(), "direction ", "jusqu’à " + stopTimes.get(i).getStop().getName()};
             
             donnees[(i*2)+1][0] = "metro"+stopTimes.get(i).getTrip().getRoute().getShortName();
-            donnees[(i*2)+1][1] = new PanelDeTexte(ligne2);
+            donnees[(i*2)+1][1] = new PanelDeTexte(lignex);
             donnees[(i*2)+1][2] = this.toTime(stopTimes.get(i).getArrivalTime());
             donnees[(i*2)+1][3] = this.toTime(stopTimes.get(i).getArrivalTime() - selectedRoute.getDepartureTime());
         }
